@@ -21,6 +21,32 @@ class CluelessClient:
     def close(self):
         self.socket.close()
 
+    def makeMove(self):
+        print(f"Player {self.host} decided to make a move")
+
+    def makeSuggesstion(self):
+        print(f"Player {self.host} decided to make a sugesstion")
+
+    def makeAccusation(self):
+        print(f"Player {self.host} decided to make an accusation")
+    
+    def disproveSuggestion(self):
+        print(f"Player {self.host} please enter the item to disprove the other player")
+
+    def processMessage(self, message):
+        print(f"Processing Message: {message}")
+
+        if message == 'move':
+            self.validateMove()
+        elif message == 'suggestion':
+            self.validateSuggestion()
+        elif message == 'accusation':
+            self.validateAccusation()
+        elif message == 'disprove':
+            self.validateDisprove()
+        else:
+            print("Processing Failed: Unknown Message");
+
 if __name__ == "__main__":
     HOST = '127.0.0.1'
     PORT = 12345
