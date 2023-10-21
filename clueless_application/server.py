@@ -32,24 +32,20 @@ class CluelessServer:
     # isHallway: boolean if this is hallway or not so that can check if is occupied
     def validateMove(self, character, location):
         print("Validating Move")
-        if (location.isHallway) {
-            if (location.isOccupied){
+        if location.isHallway:
+            if location.isOccupied:
                 # sent to single player
                 print("Sorry that hallway is occupied already. Please try again.")
-            }
-            else{
+            else:
                 # sent to everybody
                 print(f"Character {character.name} move is successful to {location.name}")
                 character.location = location
                 #TODO: Update UI
-            }
-        }
-        else {
+        else:
             # send to everybody
             print(f"Character {character.name} move is successful to {location.name}")
             character.location = location
             #TODO: Update UI
-        }
 
     
     # Takes in the character making suggesstion, where they currently are located, Weapon and character making a suggesstion.
@@ -59,61 +55,61 @@ class CluelessServer:
     # suggesstedCharacter: the character they are suggessting
     def validateSuggestion(self, character, location, weaponItem, suggesstedCharacter):
         print("Validating Suggestion")
-        if (character.madeAccusation != true) {
-            if (character.location.isRoom == true){
-                if weaponItem.name not in weapons: { print('That is not a valid weapon item.') return; } 
-                if suggesstedCharacter.name not in characters: { print('That is not a valid character.') return; }
+        if character.madeAccusation != true:
+            if character.location.isRoom:
+                if weaponItem.name not in weapons: 
+                    print('That is not a valid weapon item.')
+                    return
+                if suggesstedCharacter.name not in characters:
+                    print('That is not a valid character.') 
+                    return
                 # send to everybody
                 print(f'Player {character.name} has made a valid suggesstion with {suggesstedCharacter.name} in the {location.name} with the {weaponItem.name} ')
                 #TODO: Call the disprove for other players to disprove
-            }
-            else {
+            else:
                 # send to individual
                 print("You are not in a room and therefore cannot make a suggestion.")
-            }
-        }
-        else {
+        else:
             # send to individual
             print("You have made an incorrect accusation before. You cannot make a suggesstion")
-        }
     
     def validateAccusation(self, character, room, weapon, suggesstedCharacter):
         print("Validating Accusation")
-        if (character.madeAccusation != true) {
-            if weapon.name not in weapons: { print('That is not a valid weapon item.') return; } 
-            if suggesstedCharacter.name not in characters: { print('That is not a valid character.') return; }
-            if room.name not in rooms: { print('That is not a valid room item.') return; } 
+        if character.madeAccusation != true:
+            if weapon.name not in weapons: 
+                print('That is not a valid weapon item.') 
+                return
+            if suggesstedCharacter.name not in characters:
+                print('That is not a valid character.') 
+                return
+            if room.name not in rooms: 
+                print('That is not a valid room item.') 
+                return
             # send to everybody
             print(f'Player {character.name} has made an accusation with {suggesstedCharacter.name} in the {room.name} with the {weapon.name} ')
             # check answer
-            if(weapon.name == answerArray[0] & room.name == answerArray[1] & suggesstedCharacter.name == answerArray[2]){
+            if weapon.name == answerArray[0] & room.name == answerArray[1] & suggesstedCharacter.name == answerArray[2]:
                 # send to everybody
                 print(f'Congrats! Player {character.name} has correctly made an Accusation and won the game!')
                 self.endGame()
-            }
-            else{
+            else:
                 # send to individual player
                 print('Sorry! That is incorrect. Your game is over and you cannot make any more suggesstions/accusations but you can aid your fellow players to disprove suggestions.')
                 character.madeAccusation = true
-            }
-        }
-        else {
+        else:
             # send to individual
             print("You have made an incorrect accusation before. You cannot make another one.")
-        }
 
     # This gets called after someone makes a suggestion and prompts the other players to disprove it. 
     # takes in boolean if can or not disprove, and item
     def validateDisprove(self, canDisprove, item):
         print("Validating Disprove")
-        if (canDisprove == true){
+        if canDisprove:
             # send this to client who made the suggestion 
             print(f'Hey player! Someone has been able to disprove your suggestion with this item: {item.name}')
-        }
-        else {
+        else:
             print("This player cant disprove it. On to the next one")
             #TODO: Send message to next player in list to disprove
-        }
 
 
     """

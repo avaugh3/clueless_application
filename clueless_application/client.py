@@ -2,7 +2,6 @@ import sys
 sys.path.append('../')
 import socket
 from messaging.message import Message
-import validateDisprove
 
 class CluelessClient:
     def __init__(self, host, port):
@@ -26,7 +25,8 @@ class CluelessClient:
         print(f"Player {self.host} decided to make a move")
         #TODO Figure out how we get move value
         # TODO figure out how to get character value
-        validateMove(self, self.character, move)
+        # validateMove(self, self.character, move))
+        send_message(self, 'move')
 
 
     def makeSuggesstion(self):
@@ -34,23 +34,25 @@ class CluelessClient:
         weapon = input('Please enter the weapon you think was used: ')
         suggesstedCharacter = input('Please enter who you think committed the crime: ')
         #TODO figure out character and location
-        validateSuggestion(self, character, character.location, weapon, suggesstedCharacter)
+        #validateSuggestion(self, character, character.location, weapon, suggesstedCharacter)
+        send_message(self, 'suggestion')
 
     def makeAccusation(self):
         print(f"Player {self.host} decided to make an accusation.")
         room = input('Please enter the room you think the crime occured: ')
         weapon = input('Please enter the weapon you think was used: ')
         suggesstedCharacter = input('Please enter who you think committed the crime: ')
-        validateAccusation(self, self.host, room, weapon, suggesstedCharacter)
+        # validateAccusation(self, self.host, room, weapon, suggesstedCharacter)
+        send_message(self, 'accusation')
 
     def disproveSuggestion(self):
         item = input(f"Player {self.host} please enter the item to disprove the other player. If you can not disprove enter no")
-        if(item == 'no'){
-            validateDisprove(self, false, item)
-        }
-        else{
-            validateDisprove(self, true, item)
-        }
+        if item == 'no':
+           # validateDisprove(self, false, item)
+           send_message(self, 'disprove')
+        else:
+           # validateDisprove(self, true, item)
+           send_message(self, 'disprove')
     
 
     def processMessage(self, message):
