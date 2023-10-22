@@ -25,6 +25,7 @@ class CluelessServer:
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         #self.clients = []
         self.clients = OrderedDict()
+        self.tempClientDict = OrderedDict()
 
     # Function to create the random answer of items. This will be triggered when the user presses the begin game function
     # TODO: Possibly add the division of items out into this function. 
@@ -75,6 +76,10 @@ class CluelessServer:
     def validateSuggestion(self, weaponItem, suggestedCharacter):
         print("Validating Suggestion")
         """
+
+        Server will need to check that the client has their one Accusation left. 
+        If not, the client cannot make another Accusation  
+
         if character.madeAccusation != True:
             if character.location.isRoom:
                 if weaponItem.name not in self.weapons: 
@@ -149,15 +154,14 @@ class CluelessServer:
     """
     def processMessage(self, message, client):
         loaded_msg = pickle.loads(message)
-        #print(f"Processing Message from Client {self.clients[client]}: {loaded_msg.contents}")
-        print(f"Processing Message from Client {self.clients[client]}: {'type:', loaded_msg.type, 'contents:', loaded_msg.contents}")
+        print(f"Processing Message from Client {self.clients[client]}: {'type:', loaded_msg.type, 'originalCharacterName:', loaded_msg.original_character_name, 'contents:', loaded_msg.contents}")
 
         if loaded_msg.type == 'move':
             self.validateMove(loaded_msg.contents['direction'])
             
         elif loaded_msg.type == 'suggestion':
             """
-            Method needed to get the client's current room 
+            Method or logic needed to get the client's current room 
             since their suggestion will not include the room 
             because it is implied which room is in the suggestion 
             since a Suggestion can only be made including the room 
@@ -170,15 +174,22 @@ class CluelessServer:
             self.validateDisprove(loaded_msg.contents['canDisproveSuggestion'], loaded_msg.contents['itemType'], loaded_msg.contents['item'])
         else:
             print(f"Processing Failed: Unknown Message Type \"{loaded_msg.type}\"")
-    
+
     """
     Sends message to all Clients 
     """
     def broadcastMessage(self, clients, message):
-        self.log.info('Broadcasting message: %s', message)
-        for c in clients:
-            c.send(message)
-            
+        try:
+            contents = {}
+            contents["broadcastMessageText"] = message
+            broadcast_message_instance = BroadcastMessage(contents)
+
+            for c in clients:
+                c.send(broadcast_message_instance.contents["broadcastMessageText"].encode('utf-8'))
+
+        except Exception as e:
+            print(f"Error: {e}")  
+
     """
     Starts Server Listening for Client Connections
     """
@@ -193,8 +204,23 @@ class CluelessServer:
 
             self.clients[client] = addr
 
+            self.broadcastMessage(self.clients, "New client added to the Clue-Less game")
+            
             thread = threading.Thread(target=self.handle_client, args=(client,))
             thread.start()
+
+    def sendMessageToSpecificClient(self, data, client, message):
+        try:
+            contents = {}
+            loaded_msg = pickle.loads(data)
+
+            contents["specificClientMessageText"] = message 
+            specific_client_message_instance = SpecificClientMessage(loaded_msg.original_character_name, contents)
+
+            client.send(specific_client_message_instance.contents["specificClientMessageText"].encode('utf-8'))
+            print(f"Sent message to specific client with Player Name: {loaded_msg.original_character_name}")
+        except Exception as e:
+            print(f"Error: {e}")        
     
     """
     When Client Sends Message, New Thread is Opened to Process the Message
@@ -202,17 +228,19 @@ class CluelessServer:
     def handle_client(self, client):
         while True:
             try:
-                data = client.recv(1024)
+                contents = {}
+                data = client.recv(2048)
                 if not data:
                     break
 
                 self.processMessage(data, client)
-                #self.broadcastMessage(clients, data)
 
                 response = f"Message Received by Server {self.host}:{self.port}"
                   
-                client.send(response.encode('utf-8'))
-
+                self.sendMessageToSpecificClient(data, client, response)
+                  
+                #client.send(response.encode('utf-8'))
+    
             except Exception as e:
                 print(f"Error: {e}")
                 break
