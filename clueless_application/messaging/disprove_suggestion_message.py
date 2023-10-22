@@ -30,10 +30,11 @@ who showed the card.)
 """
 
 class DisproveSuggestionMessage(Message):
-    type = 'disprove_suggestion'
+    type = 'disprove'
     def __init__(self, contents):
         self.contents = contents
 
+    # Maybe we just use itemType and item to represent this? All of these other values can be determined based on itemType and item
     # contents prop
     # 1. hasSuspectInSuggestion
     # 2. showSuspectToPlayerWithSuggestion 
@@ -42,6 +43,11 @@ class DisproveSuggestionMessage(Message):
     # 5. hasWeaponInSuggestion
     # 6. showWeaponToPlayerWithSuggestion
     # 7. canDisproveSuggestion   
+
+    # Is this a better way?
+    # 1. itemType
+    # 2. item
+    # 3. canDisproveSuggestion
 
     def printMessage(self):
         print(f"type: {self.type}") 

@@ -38,7 +38,7 @@ class CluelessClient:
         #TODO Figure out how we get move value
         # TODO figure out how to get character value
         # validateMove(self, self.character, move))
-        send_message(self, 'move')
+        self.send_message('move')
 
 
     def makeSuggesstion(self):
@@ -47,7 +47,7 @@ class CluelessClient:
         suggesstedCharacter = input('Please enter who you think committed the crime: ')
         #TODO figure out character and location
         #validateSuggestion(self, character, character.location, weapon, suggesstedCharacter)
-        send_message(self, 'suggestion')
+        self.send_message('suggestion')
 
     def makeAccusation(self):
         print(f"Player {self.host} decided to make an accusation.")
@@ -55,16 +55,16 @@ class CluelessClient:
         weapon = input('Please enter the weapon you think was used: ')
         suggesstedCharacter = input('Please enter who you think committed the crime: ')
         # validateAccusation(self, self.host, room, weapon, suggesstedCharacter)
-        send_message(self, 'accusation')
+        self.send_message('accusation')
 
     def disproveSuggestion(self):
         item = input(f"Player {self.host} please enter the item to disprove the other player. If you can not disprove enter no")
         if item == 'no':
            # validateDisprove(self, false, item)
-           send_message(self, 'disprove')
+           self.send_message('disprove')
         else:
            # validateDisprove(self, true, item)
-           send_message(self, 'disprove')
+           self.send_message('disprove')
     
 
     def processMessage(self, message):
@@ -89,7 +89,7 @@ if __name__ == "__main__":
     client.connect()
 
     while True:
-        initial_message = input("Enter a message (options: move, suggestion, accusation, disprove suggestion) or quit the game (type 'exit'): ")
+        initial_message = input("Enter a message (options: move, suggestion, accusation, disprove) or quit the game (type 'exit'): ")
         
         contents = {}
 
@@ -139,7 +139,7 @@ if __name__ == "__main__":
             accusation_message.printMessage()
             client.send_message(accusation_message)
 
-        elif initial_message == "disprove suggestion":
+        elif initial_message == 'disprove':
             initial_message.replace(" ", "_").lower()
 
             is_disprove_suggestion_possible = input("Can you disprove the Suggestion? (true/false): ")
@@ -160,6 +160,12 @@ if __name__ == "__main__":
 
                 inventory_value_to_disprove_suggestion = input("What is the specific value of the inventory item? (e.g., if a Suspect, Colonel Mustard): ")
 
+                #Just add itemType and item to message contents --------------
+                contents['itemType'] = inventory_type_to_disprove_suggestion
+                contents['item'] = inventory_value_to_disprove_suggestion
+                #-------------------------------------------------------------
+
+                """
                 if inventory_type_to_disprove_suggestion == 'Suspect' or inventory_type_to_disprove_suggestion == 'Room':
                     inventory_value_to_disprove_suggestion = inventory_value_to_disprove_suggestion.title()
                 else:
@@ -188,6 +194,7 @@ if __name__ == "__main__":
                     contents["showRoomToPlayerWithSuggestion"] = "non-applicable"
                     contents["hasWeaponInSuggestion"] = True
                     contents["showWeaponToPlayerWithSuggestion"] = inventory_value_to_disprove_suggestion
+            
             else:
                 contents["hasSuspectInSuggestion"] = False
                 contents["showSuspectToPlayerWithSuggestion"] = "non-applicable"
@@ -195,10 +202,14 @@ if __name__ == "__main__":
                 contents["showRoomToPlayerWithSuggestion"] = "non-applicable"
                 contents["hasWeaponInSuggestion"] = False 
                 contents["showWeaponToPlayerWithSuggestion"] = "non-applicable"  
+            """
             
             disprove_suggestion_message = DisproveSuggestionMessage(contents)
             disprove_suggestion_message.printMessage()
             client.send_message(disprove_suggestion_message)
+
+        else:
+            print(f"Invalid Message Type: {initial_message}")
 
         if initial_message.lower() == 'exit':
             break
