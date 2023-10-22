@@ -184,8 +184,8 @@ class CluelessServer:
             contents["broadcastMessageText"] = message
             broadcast_message_instance = BroadcastMessage(contents)
 
-            for c in clients:
-                c.send(broadcast_message_instance.contents["broadcastMessageText"].encode('utf-8'))
+            for client in clients.keys():
+                client.send(broadcast_message_instance.contents["broadcastMessageText"].encode('utf-8'))
 
         except Exception as e:
             print(f"Error: {e}")  
@@ -204,7 +204,7 @@ class CluelessServer:
 
             self.clients[client] = addr
 
-            self.broadcastMessage(self.clients, "New client added to the Clue-Less game")
+            self.broadcastMessage(self.clients, f"New client added to the Clue-Less game {addr}")
             
             thread = threading.Thread(target=self.handle_client, args=(client,))
             thread.start()

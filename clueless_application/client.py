@@ -1,5 +1,6 @@
 import socket
 import pickle
+import threading
 from messaging.message import Message
 from messaging.move_message import MoveMessage 
 from messaging.suggestion_message import SuggestionMessage
@@ -86,25 +87,32 @@ if __name__ == "__main__":
 
     client = CluelessClient(HOST, PORT)
     client.connect()
+    client.socket.settimeout(1.0)
 
     print(f"Welcome to Clue-Less!\n")
     original_character_name = input("Please enter your character name: ")
     original_character_name = original_character_name.title()
 
     while True:
+        try:
+            data = client.socket.recv(1024).decode('utf-8')
+            if data:
+                print(data+'\n')
+        except:
+            pass
 
         initial_message = input("Enter a message (options: move, suggestion, accusation, disprove) or quit the game (type 'exit'): ")
-        
+
         contents = {}
 
-        if initial_action_message == 'move':
+        if initial_message == 'move':
             move_selection = input("Enter direction to move: ")
             contents["direction"] = move_selection 
             move_message = MoveMessage(original_character_name, contents)
             move_message.printMessage()
             client.send_message(move_message)
 
-        elif initial_action_message == 'suggestion':
+        elif initial_message == 'suggestion':
             # Room is not included in the Suggestion because 
             # the server will know, based on the client which Room their 
             # character is in 
@@ -123,7 +131,7 @@ if __name__ == "__main__":
             suggestion_message.printMessage()
             client.send_message(suggestion_message)
 
-        elif initial_action_message == 'accusation':
+        elif initial_message == 'accusation':
             accusation_suspect = input("Choose a Suspect: (options: Miss Scarlet, Colonel Mustard, Missus White, Mister Green, Missus Peacock, Professor Plum): ")
             accusation_suspect = accusation_suspect.title()
             contents["suspect"] = accusation_suspect
@@ -212,7 +220,7 @@ if __name__ == "__main__":
             disprove_suggestion_message.printMessage()
             client.send_message(disprove_suggestion_message)
 
-        else:
+        elif (initial_message != 'exit'):
             print(f"Invalid Message Type: {initial_message}")
 
         if initial_message.lower() == 'exit':
