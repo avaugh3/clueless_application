@@ -30,7 +30,7 @@ who showed the card.)
 """
 
 class DisproveSuggestionMessage(Message):
-    type = 'disprove_suggestion'
+    type = 'disprove'
     def __init__(self, originalCharacterName, contents):
         self.original_character_name = originalCharacterName
         self.contents = contents
@@ -47,6 +47,11 @@ class DisproveSuggestionMessage(Message):
     # 5. hasWeaponInSuggestion
     # 6. showWeaponToPlayerWithSuggestion
     # 7. canDisproveSuggestion   
+
+    # Is this a better way?
+    # 1. itemType
+    # 2. item
+    # 3. canDisproveSuggestion
 
     def printMessage(self):
         print(f"type: {self.type}") 
