@@ -2,10 +2,10 @@ from messaging.message import Message
 
 class BroadcastMessage(Message):
     type = 'broadcast'
-    def __init__(self, type, contents):
+    def __init__(self, contents):
         self.contents = contents
    
-    # contents props
+    # Contents Property
     # 1. broadcastMessageText
 
     def printMessage(self):

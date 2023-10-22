@@ -31,10 +31,15 @@ who showed the card.)
 
 class DisproveSuggestionMessage(Message):
     type = 'disprove_suggestion'
-    def __init__(self, contents):
+    def __init__(self, originalCharacterName, contents):
+        self.original_character_name = originalCharacterName
         self.contents = contents
 
-    # contents prop
+    # Properties
+    # type
+    # originalCharacterName
+
+    # Contents Properties
     # 1. hasSuspectInSuggestion
     # 2. showSuspectToPlayerWithSuggestion 
     # 3. hasRoomInSuggestion
@@ -45,6 +50,7 @@ class DisproveSuggestionMessage(Message):
 
     def printMessage(self):
         print(f"type: {self.type}") 
+        print(f"originalCharacterName: {self.original_character_name}")
         print(f"contents:")
        
         for k, v in self.contents.items():
