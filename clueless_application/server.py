@@ -1,14 +1,15 @@
-import sys
 import socket
 import threading
 import pickle
+from collections import OrderedDict
+from messaging.message import Message
 
 class CluelessServer:
     def __init__(self, host, port):
         self.host = host
         self.port = port
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.clients = []
+        self.clients = OrderedDict()
 
     def validateMove(self):
         print("Validating Move")
@@ -34,19 +35,20 @@ class CluelessServer:
     """
     Switch-Case to Trigger Methods Based on Message Contents
     """
-    def processMessage(self, message):
-        print(f"Processing Message: {message}")
+    def processMessage(self, message, client):
+        loaded_msg = pickle.loads(message)
+        print(f"Processing Message from Client {self.clients[client]}: {loaded_msg.contents}")
 
-        if message == 'move':
+        if loaded_msg.type == 'move':
             self.validateMove()
-        elif message == 'suggestion':
+        elif loaded_msg.type == 'suggestion':
             self.validateSuggestion()
-        elif message == 'accusation':
+        elif loaded_msg.type == 'accusation':
             self.validateAccusation()
-        elif message == 'disprove':
+        elif loaded_msg.type == 'disprove':
             self.validateDisprove()
         else:
-            print("Processing Failed: Unknown Message")
+            print(f"Processing Failed: Unknown Message Type \"{loaded_msg.type}\"")
     
     """
     Starts Server Listening for Client Connections
@@ -59,7 +61,7 @@ class CluelessServer:
         while True:
             client, addr = self.socket.accept()
             print(f"Accepted connection from {addr}")
-            self.clients.append(client)
+            self.clients[client] = addr
 
             thread = threading.Thread(target=self.handle_client, args=(client,))
             thread.start()
@@ -74,20 +76,18 @@ class CluelessServer:
                 if not data:
                     break
 
-                message = data.decode('utf-8')
-                print(f"Received: {message}")
+                self.processMessage(data, client)
 
-                self.processMessage(message)
-
-                response = f"You said: {message}"
+                response = f"Message Received by Server {self.host}:{self.port}"
                 client.send(response.encode('utf-8'))
 
             except Exception as e:
                 print(f"Error: {e}")
                 break
-
+        
+        print(f"Lost Connection to Client {self.clients[client]}")
         client.close()
-        self.clients.remove(client)
+        del self.clients[client]
 
 if __name__ == "__main__":
     HOST = '127.0.0.1'
