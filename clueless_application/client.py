@@ -1,6 +1,5 @@
-import sys
-sys.path.append('../')
 import socket
+import pickle
 from messaging.message import Message
 
 class CluelessClient:
@@ -14,9 +13,14 @@ class CluelessClient:
         print(f"Connected to {self.host}:{self.port}")
 
     def send_message(self, message):
-        self.socket.send(message.encode('utf-8'))
+        
+        pickled_msg = pickle.dumps(client_msg)
+        
+        self.socket.send(pickled_msg)
         response = self.socket.recv(1024).decode('utf-8')
-        print(f"Server response: {response}")
+        
+        #Server Response
+        print(response)
 
     def close(self):
         self.socket.close()
@@ -80,6 +84,9 @@ if __name__ == "__main__":
         message = input("Enter a message (or 'exit' to quit): ")
         if message.lower() == 'exit':
             break
-        client.send_message(message)
+
+        client_msg = Message(message, f"Testing message type {message}")
+
+        client.send_message(client_msg)
 
     client.close()
