@@ -204,7 +204,7 @@ class CluelessServer:
 
             self.clients[client] = addr
 
-            self.broadcastMessage(self.clients, f"New client added to the Clue-Less game {addr}")
+            self.broadcastMessage(self.clients, f"New client added to the Clue-Less game {addr}\n")
             
             thread = threading.Thread(target=self.handle_client, args=(client,))
             thread.start()
