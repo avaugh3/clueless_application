@@ -41,7 +41,7 @@ class CluelessServer:
     # location: where they are moving to will either be a Hall object or Room Object
     # isHallway: boolean if this is hallway or not so that can check if is occupied
     def validateMove(self, direction):
-        print("Validating Move")
+        print("Trigger Validating Move")
         """
         if location.isHallway:
             if location.isOccupied:
@@ -74,7 +74,7 @@ class CluelessServer:
     # weaponItem: the weapon they are suggessting 
     # suggesstedCharacter: the character they are suggessting
     def validateSuggestion(self, weaponItem, suggestedCharacter):
-        print("Validating Suggestion")
+        print("Trigger Validating Suggestion")
         """
 
         Server will need to check that the client has their one Accusation left. 
@@ -104,7 +104,7 @@ class CluelessServer:
     If not, the client cannot make another Accusation  
     """
     def validateAccusation(self, room, weapon, suggestedCharacter):
-        print("Validating Accusation")
+        print("Trigger Validating Accusation")
         """
         if character.madeAccusation != True:
             if weapon.name not in self.weapons: 
@@ -135,7 +135,7 @@ class CluelessServer:
     # This gets called after someone makes a suggestion and prompts the other players to disprove it. 
     # takes in boolean if can or not disprove, and item
     def validateDisprove(self, canDisprove, itemType, item):
-        print("Validating Disprove")
+        print("Trigger Validating Disprove")
         if canDisprove:
             # send this to client who made the suggestion 
             print(f'Hey player! Someone has been able to disprove your suggestion with this item: {itemType} - {item}')
@@ -181,7 +181,7 @@ class CluelessServer:
     def broadcastMessage(self, clients, message):
         try:
             contents = {}
-            contents["broadcastMessageText"] = message
+            contents["broadcastMessageText"] = f"Broadcast from Server: {message}"
             broadcast_message_instance = BroadcastMessage(contents)
 
             for client in clients.keys():
@@ -189,6 +189,10 @@ class CluelessServer:
 
         except Exception as e:
             print(f"Error: {e}")  
+
+    def playerTurnNotification(self, client):
+        message = "It's your turn to make an action!"
+        client.send(message.encode('utf-8'))
 
     """
     Starts Server Listening for Client Connections
@@ -205,6 +209,9 @@ class CluelessServer:
             self.clients[client] = addr
 
             self.broadcastMessage(self.clients, f"New client added to the Clue-Less game {addr}\n")
+
+            if (len(self.clients) == 1):
+                self.playerTurnNotification(client)
             
             thread = threading.Thread(target=self.handle_client, args=(client,))
             thread.start()
@@ -218,7 +225,7 @@ class CluelessServer:
             specific_client_message_instance = SpecificClientMessage(loaded_msg.original_character_name, contents)
 
             client.send(specific_client_message_instance.contents["specificClientMessageText"].encode('utf-8'))
-            print(f"Sent message to specific client with Player Name: {loaded_msg.original_character_name}")
+            print(f"Sent response to specific client with Player Name: {loaded_msg.original_character_name}")
         except Exception as e:
             print(f"Error: {e}")        
     
@@ -238,8 +245,6 @@ class CluelessServer:
                 response = f"Message Received by Server {self.host}:{self.port}"
                   
                 self.sendMessageToSpecificClient(data, client, response)
-                  
-                #client.send(response.encode('utf-8'))
     
             except Exception as e:
                 print(f"Error: {e}")
