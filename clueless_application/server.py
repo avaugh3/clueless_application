@@ -42,6 +42,7 @@ class CluelessServer:
     # isHallway: boolean if this is hallway or not so that can check if is occupied
     def validateMove(self, direction):
         print("Trigger Validating Move")
+        
         """
         if location.isHallway:
             if location.isOccupied:
@@ -158,6 +159,7 @@ class CluelessServer:
 
         if loaded_msg.type == 'move':
             self.validateMove(loaded_msg.contents['direction'])
+            self.broadcastMessage(self.clients, f"Player {loaded_msg.original_character_name} made move {loaded_msg.contents['direction']}")
             
         elif loaded_msg.type == 'suggestion':
             """
@@ -168,8 +170,10 @@ class CluelessServer:
             the Suggestion was made in.
             """ 
             self.validateSuggestion(loaded_msg.contents['weapon'], loaded_msg.contents['suspect'])
+            self.broadcastMessage(self.clients, f"Player {loaded_msg.original_character_name}: {loaded_msg.contents['suggestionMessageText']}")
         elif loaded_msg.type == 'accusation':
             self.validateAccusation(loaded_msg.contents['room'], loaded_msg.contents['weapon'],loaded_msg.contents['suspect'])
+            self.broadcastMessage(self.clients, f"Player {loaded_msg.original_character_name}: {loaded_msg.contents['accusationMessageText']}")
         elif loaded_msg.type == 'disprove':
             self.validateDisprove(loaded_msg.contents['canDisproveSuggestion'], loaded_msg.contents['itemType'], loaded_msg.contents['item'])
         else:
@@ -181,7 +185,7 @@ class CluelessServer:
     def broadcastMessage(self, clients, message):
         try:
             contents = {}
-            contents["broadcastMessageText"] = f"Broadcast from Server: {message}"
+            contents["broadcastMessageText"] = f"\nBroadcast from Server: [{message}]\n"
             broadcast_message_instance = BroadcastMessage(contents)
 
             for client in clients.keys():
@@ -208,7 +212,7 @@ class CluelessServer:
 
             self.clients[client] = addr
 
-            self.broadcastMessage(self.clients, f"New client added to the Clue-Less game {addr}\n")
+            self.broadcastMessage(self.clients, f"New client added to the Clue-Less game {addr}")
 
             if (len(self.clients) == 1):
                 self.playerTurnNotification(client)
