@@ -1,5 +1,5 @@
 class Character:
-    def __init__(self,name, location, turn, inventory, history, madeAccusation):
+    def __init__(self,name = None, location = None):
         self.name = name
         self.location = location
         self.madeAccusation = False

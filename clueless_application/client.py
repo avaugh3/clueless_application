@@ -1,18 +1,30 @@
 import socket
 import pickle
 import sys
-import select
+import platform
+import time
+import random
 from messaging.message import Message
-from messaging.move_message import MoveMessage 
-from messaging.suggestion_message import SuggestionMessage
-from messaging.accusation_message import AccusationMessage
-from messaging.disprove_suggestion_message import DisproveSuggestionMessage
+from Inventory.character import Character
+from Inventory.inventory import Inventory
+
 
 class CluelessClient:
     def __init__(self, host, port):
         self.host = host
         self.port = port
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.character = Character()
+        self.inventory = Inventory()
+        self.playerName = None
+        self.boardLocation = [random.randint(0, 4), random.randint(0, 4)]
+        self.characterInventory = []
+        self.roomInventory = []
+        self.weaponInventory = []
+        
+
+    def setBoardLocation(self,location):
+        self.boardLocation = location
 
     def connect(self):
         self.socket.connect((self.host, self.port))
@@ -22,10 +34,21 @@ class CluelessClient:
         pickled_msg = pickle.dumps(message)
         
         self.socket.send(pickled_msg)
-        response = self.socket.recv(1024).decode('utf-8')
+        #response = self.socket.recv(1024).decode('utf-8')
         
         #Server Response
-        print(response)
+        #print(response)
+
+    def processMessage(self, message):
+        loaded_msg = pickle.loads(message)
+
+        if (loaded_msg.type == "updateLocation"):
+            print(loaded_msg.contents["info"])
+            self.setBoardLocation(loaded_msg.contents['newLocation'])
+        elif (loaded_msg.type == "info"):
+            print(loaded_msg.contents["info"])
+        elif (loaded_msg.type == "addWeapon"):
+            self.weaponInventory.append(loaded_msg.contents['weapon'])
 
     def handle_read(self):
         message = self.recv(1024)
@@ -40,7 +63,6 @@ class CluelessClient:
         # TODO figure out how to get character value
         # validateMove(self, self.character, move))
         self.send_message('move')
-
 
     def makeSuggesstion(self):
         print(f"Player {self.host} decided to make a sugesstion")
@@ -67,29 +89,36 @@ class CluelessClient:
            # validateDisprove(self, true, item)
            self.send_message('disprove')
     
-
-    def processMessage(self, message):
-        print(f"Processing Message: {message}")
-
-        if message == 'move':
-            self.validateMove()
-        elif message == 'suggestion':
-            self.validateSuggestion()
-        elif message == 'accusation':
-            self.validateAccusation()
-        elif message == 'disprove':
-            self.validateDisprove()
-        else:
-            print("Processing Failed: Unknown Message")
-    
-    def inputWithTimeout(self, prompt, timeout, print_prompt):
+    def inputWithTimeout(self, prompt, timeout, print_prompt=True):
         if print_prompt:
+            print()
+            print(f"Player Name: {self.playerName}")
+            print(f"Board Location: {self.boardLocation}")
+            print(f"Room Inventory: {self.roomInventory}")
+            print(f"CharacterInventory: {self.characterInventory}")
+            print(f"Weapon Inventory: {self.weaponInventory}")
             print(prompt)
-        rlist, _, _ = select.select([sys.stdin], [], [], timeout)
-        if rlist:
-            return sys.stdin.readline().strip()
-        else:
-            return None
+
+        start_time = time.time()
+        input_data = None
+
+        while True:
+            if platform.system() == 'Windows':
+                import msvcrt
+                if msvcrt.kbhit():
+                    input_data = msvcrt.getche().decode()
+                    break
+            else:
+                import select
+                rlist, _, _ = select.select([sys.stdin], [], [], 0)
+                if rlist:
+                    input_data = sys.stdin.readline().rstrip('\n')
+                    break
+
+            if time.time() - start_time > timeout:
+                break
+
+        return input_data
 
 if __name__ == "__main__":
     HOST = '127.0.0.1'
@@ -116,17 +145,20 @@ if __name__ == "__main__":
     print(f"Welcome to Clue-Less!\n")
     original_character_name = input("Please enter your character name: ")
     original_character_name = original_character_name.title()
+    client.character.name = original_character_name
+    client.playerName = original_character_name
 
     while True:
         #Check for server message each loop iteration
         try:
-            data = client.socket.recv(1024).decode('utf-8')
+            data = client.socket.recv(2048) #recv(1024).decode('utf-8')
             if data:
-                print(data+'\n')
+                client.processMessage(data)
+
                 print_prompt = True
         except:
             pass
-
+        
         initial_message = client.inputWithTimeout("Enter a message (options: move, suggestion, accusation, disprove) or quit the game (type 'exit'): ", INPUT_TIMEOUT, print_prompt)
         print_prompt = False
 
@@ -136,14 +168,13 @@ if __name__ == "__main__":
             if initial_message == 'move':
                 move_selection = input("Enter direction to move: ")
                 contents["direction"] = move_selection 
-                move_message = MoveMessage(original_character_name, contents)
-                move_message.printMessage()
+                contents["currentLocation"] = client.boardLocation
+        
+                move_message = Message("move", original_character_name, contents)
+                #move_message.printMessage()
                 client.send_message(move_message)
 
             elif initial_message == 'suggestion':
-                # Room is not included in the Suggestion because 
-                # the server will know, based on the client which Room their 
-                # character is in 
                 suggestion_suspect = input("Choose a Suspect: (options: Miss Scarlet, Colonel Mustard, Missus White, Mister Green, Missus Peacock, Professor Plum): ")
                 suggestion_suspect = suggestion_suspect.title()
                 contents["suspect"] = suggestion_suspect
@@ -152,11 +183,11 @@ if __name__ == "__main__":
                 suggestion_weapon.replace(" ", "").lower()
                 contents["weapon"] = suggestion_weapon 
 
-                suggestion = "I suggest the crime was committed in [room_name_server_to_determine] by " + contents["suspect"] + " with the " + contents["weapon"]
+                suggestion = f"I suggest the crime was committed in {client.boardLocation} by " + contents["suspect"] + " with the " + contents["weapon"]
                 contents["suggestionMessageText"] = suggestion 
 
-                suggestion_message = SuggestionMessage(original_character_name, contents)
-                suggestion_message.printMessage()
+                suggestion_message = Message("suggestion", original_character_name, contents)
+                #suggestion_message.printMessage()
                 client.send_message(suggestion_message)
 
             elif initial_message == 'accusation':
@@ -175,8 +206,8 @@ if __name__ == "__main__":
                 accusation = "I accuse " + contents["suspect"] + " of committing the crime in the " + contents["room"] + " with the " + contents["weapon"]
                 contents["accusationMessageText"] = accusation
 
-                accusation_message = AccusationMessage(original_character_name, contents)
-                accusation_message.printMessage()
+                accusation_message = Message("accusation", original_character_name, contents)
+                #accusation_message.printMessage()
                 client.send_message(accusation_message)
 
             elif initial_message == 'disprove':
@@ -204,47 +235,9 @@ if __name__ == "__main__":
                     contents['itemType'] = inventory_type_to_disprove_suggestion
                     contents['item'] = inventory_value_to_disprove_suggestion
                     #-------------------------------------------------------------
-
-                    """
-                    if inventory_type_to_disprove_suggestion == 'Suspect' or inventory_type_to_disprove_suggestion == 'Room':
-                        inventory_value_to_disprove_suggestion = inventory_value_to_disprove_suggestion.title()
-                    else:
-                        inventory_value_to_disprove_suggestion = inventory_value_to_disprove_suggestion.lower()
-                        
-                    if inventory_type_to_disprove_suggestion == 'Suspect':
-                        contents["hasSuspectInSuggestion"] = True 
-                        contents["showSuspectToPlayerWithSuggestion"] = inventory_value_to_disprove_suggestion
-                        contents["hasRoomInSuggestion"] = False 
-                        contents["showRoomToPlayerWithSuggestion"] = "non-applicable"
-                        contents["hasWeaponInSuggestion"] = False 
-                        contents["showWeaponToPlayerWithSuggestion"] = "non-applicable"    
-
-                    elif inventory_type_to_disprove_suggestion == 'Room':
-                        contents["hasSuspectInSuggestion"] = False
-                        contents["showSuspectToPlayerWithSuggestion"] = "non-applicable"
-                        contents["hasRoomInSuggestion"] = True
-                        contents["showRoomToPlayerWithSuggestion"] = inventory_value_to_disprove_suggestion
-                        contents["hasWeaponInSuggestion"] = False 
-                        contents["showWeaponToPlayerWithSuggestion"] = "non-applicable" 
-
-                    elif inventory_type_to_disprove_suggestion == 'Weapon':
-                        contents["hasSuspectInSuggestion"] = False
-                        contents["showSuspectToPlayerWithSuggestion"] = "non-applicable"
-                        contents["hasRoomInSuggestion"] = False 
-                        contents["showRoomToPlayerWithSuggestion"] = "non-applicable"
-                        contents["hasWeaponInSuggestion"] = True
-                        contents["showWeaponToPlayerWithSuggestion"] = inventory_value_to_disprove_suggestion
                 
-                else:
-                    contents["hasSuspectInSuggestion"] = False
-                    contents["showSuspectToPlayerWithSuggestion"] = "non-applicable"
-                    contents["hasRoomInSuggestion"] = False 
-                    contents["showRoomToPlayerWithSuggestion"] = "non-applicable"
-                    contents["hasWeaponInSuggestion"] = False 
-                    contents["showWeaponToPlayerWithSuggestion"] = "non-applicable"  
-                """
-                
-                disprove_suggestion_message = DisproveSuggestionMessage(original_character_name, contents)
+                #disprove_suggestion_message = DisproveSuggestionMessage(original_character_name, contents)
+                disprove_suggestion_message = Message("disprove", original_character_name, contents)
                 disprove_suggestion_message.printMessage()
                 client.send_message(disprove_suggestion_message)
 
