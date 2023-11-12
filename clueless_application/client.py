@@ -82,6 +82,8 @@ class CluelessClient:
         else:
             print("Processing Failed: Unknown Message")
     
+    """
+    #This doesn't work on Windows for some reason
     def inputWithTimeout(self, prompt, timeout, print_prompt):
         if print_prompt:
             print(prompt)
@@ -90,6 +92,31 @@ class CluelessClient:
             return sys.stdin.readline().strip()
         else:
             return None
+    """
+    def inputWithTimeout(self, prompt, timeout, print_prompt=True):
+        if print_prompt:
+            print(prompt)
+
+        start_time = time.time()
+        input_data = None
+
+        while True:
+            if platform.system() == 'Windows':
+                import msvcrt
+                if msvcrt.kbhit():
+                    input_data = msvcrt.getche().decode()
+                    break
+            else:
+                import select
+                rlist, _, _ = select.select([sys.stdin], [], [], 0)
+                if rlist:
+                    input_data = sys.stdin.readline().rstrip('\n')
+                    break
+
+            if time.time() - start_time > timeout:
+                break
+
+        return input_data
 
 if __name__ == "__main__":
     HOST = '127.0.0.1'
