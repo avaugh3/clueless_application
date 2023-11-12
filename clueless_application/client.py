@@ -21,6 +21,8 @@ class CluelessClient:
         self.characterInventory = []
         self.roomInventory = []
         self.weaponInventory = []
+        self.ready = False
+        self.gameStarted = False
         
 
     def setBoardLocation(self,location):
@@ -47,8 +49,11 @@ class CluelessClient:
             self.setBoardLocation(loaded_msg.contents['newLocation'])
         elif (loaded_msg.type == "info"):
             print(loaded_msg.contents["info"])
-        elif (loaded_msg.type == "addWeapon"):
-            self.weaponInventory.append(loaded_msg.contents['weapon'])
+        elif (loaded_msg.type == "updateInventory"):
+            print("Updating Client Inventory")
+            self.roomInventory = loaded_msg.contents['rooms']
+            self.weaponInventory = loaded_msg.contents['weapons']
+            self.characterInventory = loaded_msg.contents['characters']
 
     def handle_read(self):
         message = self.recv(1024)
@@ -159,13 +164,23 @@ if __name__ == "__main__":
         except:
             pass
         
-        initial_message = client.inputWithTimeout("Enter a message (options: move, suggestion, accusation, disprove) or quit the game (type 'exit'): ", INPUT_TIMEOUT, print_prompt)
-        print_prompt = False
-
+        if (client.ready):
+            initial_message = client.inputWithTimeout("Enter a message (options: move, suggestion, accusation, disprove) or quit the game (type 'exit'): ", INPUT_TIMEOUT, print_prompt)
+            print_prompt = False
+        else:
+            initial_message = client.inputWithTimeout("Type 'Ready' to Notify Server You are Ready to Begin: ", INPUT_TIMEOUT, print_prompt)
+            print_prompt = False
+    
         if (initial_message != None):
             print_prompt = True
             contents = {}
-            if initial_message == 'move':
+            
+            if initial_message == 'ready':
+                ready_message = Message("ready", original_character_name, None)
+                client.send_message(ready_message)
+                client.ready = True
+
+            elif initial_message == 'move':
                 move_selection = input("Enter direction to move: ")
                 contents["direction"] = move_selection 
                 contents["currentLocation"] = client.boardLocation

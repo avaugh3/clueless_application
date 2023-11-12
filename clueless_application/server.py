@@ -3,11 +3,13 @@ import socket
 import threading
 import pickle
 import random 
+import time
 from collections import OrderedDict
 from messaging.message import Message
 from messaging.broadcast_message import BroadcastMessage
 from messaging.specific_client_message import SpecificClientMessage
 from gameAnswer import GameAnswer
+import itertools
 
 class CluelessServer:
     def __init__(self, host, port):
@@ -21,6 +23,7 @@ class CluelessServer:
         self.weapons = ['rope', 'leadpipe', 'knife', 'wrench', 'candlestick', 'revolver', 'dagger']
         self.rooms = ['study', 'hall', 'lounge', 'diningroom', 'kitchen', 'ballroom', 'conservatory', 'library', 'billardroom']
         self.characters = ['missscarlet', 'colonelmustard', 'missuswhite', 'mistergreen', 'missuspeacock', 'professorplum']
+        self.playersReady = 0
 
     def validateMove(self, client, message):
         print("Beginning Move Validation")
@@ -144,29 +147,54 @@ class CluelessServer:
         print("Winner Determined, Exiting Game")
 
     def startGame(self):
-        print("Deal inventory to joined clients.")
-        
-        contents = {}
-        
-        contents["weapon"] = "dagger"
+        print("Dealing Rooms, Weapons, and Characters to all Joined Players")
+        num_clients = len(self.clients)
+
+        rooms_per_client = len(self.roomsInventory) // num_clients
+        rooms_remainder = len(self.roomsInventory) % num_clients
+        rooms_start_index = 0
+
+        weapons_per_client = len(self.weaponsInventory) // num_clients
+        weapons_remainder = len(self.weaponsInventory) % num_clients
+        weapons_start_index = 0
+
+        characters_per_client = len(self.charactersInventory) // num_clients
+        characters_remainder = len(self.charactersInventory) % num_clients
+        characters_start_index = 0
+
+        # Iterate through the clients and distribute the rooms
+        for client in self.clients.keys():
+            contents = {}
+            # Calculate the end index for slicing
+            rooms_end_index = rooms_start_index + rooms_per_client + (1 if rooms_remainder > 0 else 0)
+            weapons_end_index = weapons_start_index + weapons_per_client + (1 if weapons_remainder > 0 else 0)
+            characters_end_index = characters_start_index + characters_per_client + (1 if characters_remainder > 0 else 0)
             
-        updateMessage = Message("addWeapon", "Server", contents)
+            # Get the portion of weapons for the current client
+            rooms_portion = self.roomsInventory[rooms_start_index:rooms_end_index]
+            weapons_portion = self.weaponsInventory[weapons_start_index:weapons_end_index]
+            characters_portion = self.charactersInventory[characters_start_index:characters_end_index]
+            
+            # Update the contents dictionary for the current client
+            contents['rooms'] = rooms_portion
+            contents['weapons'] = weapons_portion
+            contents['characters'] = characters_portion
 
-        random.shuffle(self.weapons)
-        random.shuffle(self.rooms)
-        random.shuffle(self.characters)
-
-        for client, item in zip(self.clients.keys(), self.weapons):
-            contents["weapon"] = item
-            updateMessage = Message("addWeapon", "Server", contents)
-
+            # Create and send the message to the current client
+            updateMessage = Message("updateInventory", "Server", contents)
             self.sendMessageToSpecificClient(client, updateMessage)
+            
+            # Update the start index for the next iteration
+            rooms_start_index = rooms_end_index
+            rooms_remainder -= 1
+
+            weapons_start_index = weapons_end_index
+            weapons_remainder -= 1
+
+            characters_start_index = characters_end_index
+            characters_remainder -= 1
         
-
-        print("Output game board.")
-
-        print("Send move notifcation to first player.")
-
+            
     """
     Switch-Case to Trigger Methods Based on Message Contents
     """
@@ -174,7 +202,14 @@ class CluelessServer:
         loaded_msg = pickle.loads(message)
         print(f"Processing Message from Client {self.clients[client]}: {'type:', loaded_msg.type, 'originalCharacterName:', loaded_msg.originalCharacterName, 'contents:', loaded_msg.contents}")
 
-        if loaded_msg.type == 'move':
+        if loaded_msg.type == 'ready':
+            self.playersReady += 1
+            print(f"Player {loaded_msg.originalCharacterName} is Ready to Begin")
+
+            if (self.playersReady == len(self.clients)):
+                self.startGame()
+
+        elif loaded_msg.type == 'move':
             self.validateMove(client, loaded_msg)
 
         elif loaded_msg.type == 'suggestion':
@@ -233,7 +268,6 @@ class CluelessServer:
     When Client Sends Message, New Thread is Opened to Process the Message
     """
     def handle_client(self, client):
-        self.startGame()
         while True:
             try:
                 #contents = {}

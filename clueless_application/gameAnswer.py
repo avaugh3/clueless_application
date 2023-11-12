@@ -8,9 +8,9 @@ class GameAnswer:
         self.weapon = weapon
         self.room = room
 
-        self.weaponsList = ['rope', 'lead pipe', 'knife', 'wrench', 'candlestick', 'revolver']
-        self.roomsList = ['study', 'hall', 'lounge', 'dining room', 'kitchen', 'ballroom', 'conservatory', 'library', 'billard room']
-        self.charactersList = ['miss scarlet', 'colonel mustard', 'mrs. white', 'mr. green', 'mrs. peacock', 'professor plum']
+        self.weaponsList = ['rope', 'leadpipe', 'knife', 'wrench', 'candlestick', 'revolver', 'dagger']
+        self.roomsList = ['study', 'hall', 'lounge', 'diningroom', 'kitchen', 'ballroom', 'conservatory', 'library', 'billardroom']
+        self.charactersList = ['missscarlet', 'colonelmustard', 'missuswhite', 'mistergreen', 'missuspeacock', 'professorplum']
      
     
     def GenerateAnswer(self):
