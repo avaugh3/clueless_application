@@ -20,7 +20,7 @@ class CluelessServer:
     
     weapons = ['rope', 'lead pipe', 'knife', 'wrench', 'candlestick', 'revolver']
     rooms = ['study', 'hall', 'lounge', 'dining room', 'kitchen', 'ballroom', 'conservatory', 'library', 'billiard room']
-    self.roomsWithSpacesForHallwaysways = ['study', 'hallway', 'hall', 'hallway', 'lounge', 
+    roomsWithSpacesForHallways = ['study', 'hallway', 'hall', 'hallway', 'lounge', 
         'hallway', ' ', 'hallway', ' ', 'hallway', 
         'library', 'hallway', 'billiard room', 'hallway', 'dining room', 
         'hallway', ' ', 'hallway', ' ', 'hallway', 
@@ -223,7 +223,7 @@ class CluelessServer:
         player3 = Character('mister green', 'mister green\'s home square', False, True, [], [])
         charactersList = [player1, player2, player3]
 
-        gameboard.printBoard(self.self.roomsWithSpacesForHallwaysways, charactersList)
+        gameboard.printBoard(self.roomsWithSpacesForHallways, charactersList)
 
         roomChoice = Room('lounge', '', False, '')
 
