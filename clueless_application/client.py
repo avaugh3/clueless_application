@@ -47,13 +47,16 @@ class CluelessClient:
         if (loaded_msg.type == "updateLocation"):
             print(loaded_msg.contents["info"])
             self.setBoardLocation(loaded_msg.contents['newLocation'])
+
         elif (loaded_msg.type == "info"):
             print(loaded_msg.contents["info"])
-        elif (loaded_msg.type == "updateInventory"):
-            print("Updating Client Inventory")
+
+        elif (loaded_msg.type == "loadInventory"):
+            print("Loading Client Inventory")
             self.roomInventory = loaded_msg.contents['rooms']
             self.weaponInventory = loaded_msg.contents['weapons']
             self.characterInventory = loaded_msg.contents['characters']
+            self.gameStarted = True
 
     def handle_read(self):
         message = self.recv(1024)
@@ -62,46 +65,15 @@ class CluelessClient:
     def close(self):
         self.socket.close()
 
-    def makeMove(self):
-        print(f"Player {self.host} decided to make a move")
-        #TODO Figure out how we get move value
-        # TODO figure out how to get character value
-        # validateMove(self, self.character, move))
-        self.send_message('move')
-
-    def makeSuggesstion(self):
-        print(f"Player {self.host} decided to make a sugesstion")
-        weapon = input('Please enter the weapon you think was used: ')
-        suggesstedCharacter = input('Please enter who you think committed the crime: ')
-        #TODO figure out character and location
-        #validateSuggestion(self, character, character.location, weapon, suggesstedCharacter)
-        self.send_message('suggestion')
-
-    def makeAccusation(self):
-        print(f"Player {self.host} decided to make an accusation.")
-        room = input('Please enter the room you think the crime occured: ')
-        weapon = input('Please enter the weapon you think was used: ')
-        suggesstedCharacter = input('Please enter who you think committed the crime: ')
-        # validateAccusation(self, self.host, room, weapon, suggesstedCharacter)
-        self.send_message('accusation')
-
-    def disproveSuggestion(self):
-        item = input(f"Player {self.host} please enter the item to disprove the other player. If you can not disprove enter no")
-        if item == 'no':
-           # validateDisprove(self, false, item)
-           self.send_message('disprove')
-        else:
-           # validateDisprove(self, true, item)
-           self.send_message('disprove')
-    
     def inputWithTimeout(self, prompt, timeout, print_prompt=True):
         if print_prompt:
             print()
-            print(f"Player Name: {self.playerName}")
-            print(f"Board Location: {self.boardLocation}")
-            print(f"Room Inventory: {self.roomInventory}")
-            print(f"CharacterInventory: {self.characterInventory}")
-            print(f"Weapon Inventory: {self.weaponInventory}")
+            if (self.ready and self.gameStarted):
+                print(f"Player Name: {self.playerName}")
+                print(f"- Board Location: {self.boardLocation}")
+                print(f"- Room Inventory: {self.roomInventory}")
+                print(f"- CharacterInventory: {self.characterInventory}")
+                print(f"- Weapon Inventory: {self.weaponInventory}\n")
             print(prompt)
 
         start_time = time.time()
@@ -164,11 +136,14 @@ if __name__ == "__main__":
         except:
             pass
         
-        if (client.ready):
+        if (client.ready and client.gameStarted):
             initial_message = client.inputWithTimeout("Enter a message (options: move, suggestion, accusation, disprove) or quit the game (type 'exit'): ", INPUT_TIMEOUT, print_prompt)
             print_prompt = False
-        else:
+        elif (not client.ready):
             initial_message = client.inputWithTimeout("Type 'Ready' to Notify Server You are Ready to Begin: ", INPUT_TIMEOUT, print_prompt)
+            print_prompt = False
+        else:
+            initial_message = client.inputWithTimeout("Waiting for Server to start game...", INPUT_TIMEOUT, print_prompt)
             print_prompt = False
     
         if (initial_message != None):
@@ -179,6 +154,7 @@ if __name__ == "__main__":
                 ready_message = Message("ready", original_character_name, None)
                 client.send_message(ready_message)
                 client.ready = True
+                
 
             elif initial_message == 'move':
                 move_selection = input("Enter direction to move: ")
@@ -235,26 +211,23 @@ if __name__ == "__main__":
                 print(is_disprove_suggestion_possible)
 
                 if is_disprove_suggestion_possible:
+ 
+                    #item_type = input("Which inventory item type do you have? (options: Suspect, Room, Weapon): ")
+                    #inventory_type_to_disprove_suggestion = inventory_type_to_disprove_suggestion.capitalize()
 
-                    # In the future, can check if player has more than one of the items from the Suggestion
-                    # Here, only considering one case, which is at minimum, the the player has at least 
-                    # one card in their inventory that is within the Suggestion (and does not have any other 
-                    # cards from the Suggestion)
-                    # In the future, we'll also want to provide input validation 
-                    inventory_type_to_disprove_suggestion = input("Which inventory item type do you have? (options: Suspect, Room, Weapon): ")
-                    inventory_type_to_disprove_suggestion = inventory_type_to_disprove_suggestion.capitalize()
-
-                    inventory_value_to_disprove_suggestion = input("What is the specific value of the inventory item? (e.g., if a Suspect, Colonel Mustard): ")
+                    disprove_item = input("What is the specific value of the inventory item? (e.g., Dagger, Colonel Mustard, Lounge): ")
 
                     #Just add itemType and item to message contents --------------
-                    contents['itemType'] = inventory_type_to_disprove_suggestion
-                    contents['item'] = inventory_value_to_disprove_suggestion
+                    #contents['itemType'] = inventory_type_to_disprove_suggestion
+                    contents['item'] = disprove_item
                     #-------------------------------------------------------------
-                
-                #disprove_suggestion_message = DisproveSuggestionMessage(original_character_name, contents)
-                disprove_suggestion_message = Message("disprove", original_character_name, contents)
-                disprove_suggestion_message.printMessage()
-                client.send_message(disprove_suggestion_message)
+
+                if (disprove_item in client.characterInventory or disprove_item in client.roomInventory or disprove_item in client.weaponInventory):
+                    disprove_message = Message("disprove", original_character_name, contents)
+                    #disprove_message.printMessage()
+                    client.send_message(disprove_message)
+                else:
+                    print(f"You do not have item \"{disprove_item}\" in your inventory. Please enter a different item.")
 
             elif (initial_message != 'exit'):
                 print(f"Invalid Message Type: {initial_message}")

@@ -24,6 +24,7 @@ class CluelessServer:
         self.rooms = ['study', 'hall', 'lounge', 'diningroom', 'kitchen', 'ballroom', 'conservatory', 'library', 'billardroom']
         self.characters = ['missscarlet', 'colonelmustard', 'missuswhite', 'mistergreen', 'missuspeacock', 'professorplum']
         self.playersReady = 0
+        self.currentSuggestion = ["dagger", "study", "rope"]
 
     def validateMove(self, client, message):
         print("Beginning Move Validation")
@@ -89,6 +90,10 @@ class CluelessServer:
             print(f"Player {message.originalCharacterName}: Weapon \"{weapon}\" is not a valid game weapon.")
 
         else:
+            self.currentSuggestion = []
+            self.currentSuggestion.append(suspect)
+            self.currentSuggestion.append(weapon)
+
             contents["info"] = f"Broadcast From Server: Player {message.originalCharacterName}: \"{message.contents['suggestionMessageText']}\""
             infoMessage = Message("info", "Server", contents)
     
@@ -125,26 +130,57 @@ class CluelessServer:
             print(f"Player {message.originalCharacterName}: Room \"{room}\" is not a valid game room.")
 
         else:
-            contents["info"] = f"Broadcast From Server: Player {message.originalCharacterName}: \"{message.contents['accusationMessageText']}\""
-            infoMessage = Message("info", "Server", contents)
+            if (suspect.replace(" ","").lower() == self.winningAnswer.character.replace(" ","").lower() and 
+                weapon.replace(" ","").lower() == self.winningAnswer.weapon.replace(" ","").lower() and 
+                room.replace(" ","").lower() == self.winningAnswer.room.replace(" ","").lower()):
+                
+                contents["info"] = f"Broadcast From Server: Accusation was correct! \n Player {message.originalCharacterName}: \"{message.contents['accusationMessageText']}\" \n Player {message.originalCharacterName} wins! \n Thanks for playing!"
+                infoMessage = Message("info", "Server", contents)
     
-            self.broadcastMessage(self.clients, infoMessage)
-            print(f"Player {message.originalCharacterName}: \"{message.contents['accusationMessageText']}\"")
+                self.broadcastMessage(self.clients, infoMessage)    
+                print(f"Accusation was correct! \n Player {message.originalCharacterName}: \"{message.contents['accusationMessageText']}\" \n Player {message.originalCharacterName} wins! \n Thanks for playing!")
             
-    def validateDisprove(self, canDisprove, itemType, item):
+                self.endGame()
+
+            else:
+                contents["info"] = f"Broadcast From Server: Accusation Incorrect. \n Player {message.originalCharacterName}: \"{message.contents['accusationMessageText']}\" \n Player {message.originalCharacterName} is disqualified from game."
+                infoMessage = Message("info", "Server", contents)
+    
+                self.broadcastMessage(self.clients, infoMessage)    
+                print(f"Accusation Incorrect. \n Player {message.originalCharacterName}: \"{message.contents['accusationMessageText']}\" \n Player {message.originalCharacterName} is disqualified from game.")
+                     
+    def validateDisprove(self, client, message):
         print("Trigger Validating Disprove")
-        if canDisprove:
-            # send this to client who made the suggestion 
-            print(f'Hey player! Someone has been able to disprove your suggestion with this item: {itemType} - {item}')
+
+        item = message.contents['item']
+
+        if (item.replace(" ","").lower() in self.currentSuggestion):
+            print(f"Player {message.originalCharacterName} disproved item \"{item}\". {item} is not in winning answer.")
+
+            contents = {}
+            contents['info'] = f"Player {message.originalCharacterName} disproved item \"{item}\". {item} is not in winning answer."
+
+            infoMessage = Message("info", "Server", contents)
+
+            self.broadcastMessage(self.clients,infoMessage)
         else:
-            print("This player cant disprove it. On to the next one")
-            #TODO: Send message to next player in list to disprove
+            print(f"Item \"{item}\" is not in the current suggestion. Cannot disprove suggestion. Please try again.")
+
+            contents = {}
+            contents['info'] = f"Item \"{item}\" is not in the current suggestion. Cannot disprove suggestion. Please try again."
+
+            infoMessage = Message("info", "Server", contents)
+
+            self.sendMessageToSpecificClient(client,infoMessage)
 
     def determineGameWinner(self):
         print("Determining if There is a Game Winner")
     
     def endGame(self):
-        print("Winner Determined, Exiting Game")
+        print("Shutting down Clue-Less Server...")
+        for client in self.clients.keys():
+            client.close()
+        sys.exit(0)
 
     def startGame(self):
         print("Dealing Rooms, Weapons, and Characters to all Joined Players")
@@ -181,7 +217,7 @@ class CluelessServer:
             contents['characters'] = characters_portion
 
             # Create and send the message to the current client
-            updateMessage = Message("updateInventory", "Server", contents)
+            updateMessage = Message("loadInventory", "Server", contents)
             self.sendMessageToSpecificClient(client, updateMessage)
             
             # Update the start index for the next iteration
@@ -207,6 +243,9 @@ class CluelessServer:
             print(f"Player {loaded_msg.originalCharacterName} is Ready to Begin")
 
             if (self.playersReady == len(self.clients)):
+                print("Clue-Less Game is Starting!")
+                print(f"\nWinning Answer Generated: \n- Room: {self.winningAnswer.room}\n- Character: {self.winningAnswer.character}\n- Weapon: {self.winningAnswer.weapon}\n")
+                
                 self.startGame()
 
         elif loaded_msg.type == 'move':
