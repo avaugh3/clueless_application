@@ -222,7 +222,7 @@ if __name__ == "__main__":
                     contents['item'] = disprove_item
                     #-------------------------------------------------------------
 
-                if (disprove_item in client.characterInventory or disprove_item in client.roomInventory or disprove_item in client.weaponInventory):
+                if (disprove_item.replace(" ","").lower() in client.characterInventory or disprove_item.replace(" ","").lower() in client.roomInventory or disprove_item.replace(" ","").lower() in client.weaponInventory):
                     disprove_message = Message("disprove", original_character_name, contents)
                     #disprove_message.printMessage()
                     client.send_message(disprove_message)

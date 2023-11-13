@@ -6,8 +6,8 @@ import random
 import time
 from collections import OrderedDict
 from messaging.message import Message
-from messaging.broadcast_message import BroadcastMessage
-from messaging.specific_client_message import SpecificClientMessage
+#from messaging.broadcast_message import BroadcastMessage
+#from messaging.specific_client_message import SpecificClientMessage
 from gameAnswer import GameAnswer
 import itertools
 
@@ -51,7 +51,13 @@ class CluelessServer:
                 updateMessage = Message("updateLocation", "Server", contents)
     
                 self.sendMessageToSpecificClient(client, updateMessage)
+                
                 print(f"Move Validated: {message.originalCharacterName} moved from {currentLocation} to {newLocation}")
+
+                contents["info"] = f"Move Validated: {message.originalCharacterName} moved from {currentLocation} to {newLocation}"
+                broadcastMessage = Message("info", "Server", contents)
+
+                self.broadcastMessage(self.clients, broadcastMessage)
             else:
                 contents = {}
                 contents["info"] = f"Message From Server: Invalid move, move is out of bounds of game board!"
@@ -91,8 +97,8 @@ class CluelessServer:
 
         else:
             self.currentSuggestion = []
-            self.currentSuggestion.append(suspect)
-            self.currentSuggestion.append(weapon)
+            self.currentSuggestion.append(suspect.replace(" ","").lower())
+            self.currentSuggestion.append(weapon.replace(" ","").lower())
 
             contents["info"] = f"Broadcast From Server: Player {message.originalCharacterName}: \"{message.contents['suggestionMessageText']}\""
             infoMessage = Message("info", "Server", contents)
