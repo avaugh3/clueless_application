@@ -11,19 +11,27 @@ from messaging.accusation_message import AccusationMessage
 from messaging.disprove_suggestion_message import DisproveSuggestionMessage
 from messaging.broadcast_message import BroadcastMessage
 from messaging.specific_client_message import SpecificClientMessage
+from Inventory.character import Character 
+from Inventory.room import Room 
+from Inventory.hallway import Hallway
+from gameboard.gameboard import Gameboard
 
 class CluelessServer:
     
     weapons = ['rope', 'lead pipe', 'knife', 'wrench', 'candlestick', 'revolver']
-    rooms = ['study', 'hall', 'lounge', 'dining room', 'kitchen', 'ballroom', 'conservatory', 'library', 'billard room']
-    characters = ['miss scarlet', 'colonel mustard', 'mrs. white', 'mr. green', 'mrs. peacock', 'professor plum']
+    rooms = ['study', 'hall', 'lounge', 'dining room', 'kitchen', 'ballroom', 'conservatory', 'library', 'billiard room']
+    roomsWithSpacesForHallways = ['study', 'hallway', 'hall', 'hallway', 'lounge', 
+                                   'hallway', ' ', 'hallway', ' ', 'hallway', 
+                                   'library', 'hallway', 'billiard room', 'hallway', 'dining room', 
+                                   'hallway', ' ', 'hallway', ' ', 'hallway', 
+                                   'conservatory', 'hallway', 'ballroom', 'hallway', 'kitchen']
+    characters = ['miss scarlet', 'colonel mustard', 'missus white', 'mister green', 'missus peacock', 'professor plum']
     answerArray = []
 
     def __init__(self, host, port):
         self.host = host
         self.port = port
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        #self.clients = []
         self.clients = OrderedDict()
         self.tempClientDict = OrderedDict()
 
@@ -205,6 +213,41 @@ class CluelessServer:
         self.socket.bind((self.host, self.port))
         self.socket.listen(6)
         print(f"Server is listening on {self.host}:{self.port}")
+
+        ROOMS_WITH_SPACES_FOR_HALLS = ['study', 'hallway', 'hall', 'hallway', 'lounge', 
+            'hallway', ' ', 'hallway', ' ', 'hallway', 
+            'library', 'hallway', 'billiard room', 'hallway', 'dining room', 
+            'hallway', ' ', 'hallway', ' ', 'hallway', 
+            'conservatory', 'hallway', 'ballroom', 'hallway', 'kitchen']
+        
+        CHARACTERS = ['miss scarlet', 'colonel mustard', 'missus white', 'mister green', 'missus peacock', 'professor plum']
+        
+        # In the future, the Gameboard constructor can take in characters and rooms
+        gameboard = Gameboard()
+        player1 = Character('miss scarlet', 'miss scarlet\'s home square', False, True, [], [])
+        player2 = Character('colonel mustard', 'colonel mustard\'s home square', False, True, [], [])
+        player3 = Character('mister green', 'mister green\'s home square', False, True, [], [])
+        charactersList = [player1, player2, player3]
+
+        gameboard.printBoard(ROOMS_WITH_SPACES_FOR_HALLS, charactersList)
+
+        roomChoice = Room('lounge', '', False, '')
+
+        commonHallChoice = 'hallway between study and hall'
+
+        hallwayChoiceFirstOptionFirstAttempt = Hallway(commonHallChoice, False, '')
+        hallwayChoiceFirstOptionSecondAttempt = Hallway(commonHallChoice, True, '')
+        hallwayChoiceDifferentOption = Hallway('hallway between hall and lounge', False, '')
+        hallwayChoiceLowerBoardOption = Hallway('hallway between conservatory and ballroom', False, '')
+
+        gameboard.updateBoard(ROOMS_WITH_SPACES_FOR_HALLS, player1, charactersList, hallwayChoiceFirstOptionFirstAttempt)
+        gameboard.printBoard(ROOMS_WITH_SPACES_FOR_HALLS, charactersList)
+        gameboard.updateBoard(ROOMS_WITH_SPACES_FOR_HALLS, player2, charactersList, hallwayChoiceFirstOptionSecondAttempt)
+        gameboard.printBoard(ROOMS_WITH_SPACES_FOR_HALLS, charactersList)
+        gameboard.updateBoard(ROOMS_WITH_SPACES_FOR_HALLS, player2, charactersList, hallwayChoiceDifferentOption)
+        gameboard.printBoard(ROOMS_WITH_SPACES_FOR_HALLS, charactersList)
+        gameboard.updateBoard(ROOMS_WITH_SPACES_FOR_HALLS, player3, charactersList, hallwayChoiceLowerBoardOption)
+        gameboard.printBoard(ROOMS_WITH_SPACES_FOR_HALLS, charactersList)
 
         while True:
             client, addr = self.socket.accept()

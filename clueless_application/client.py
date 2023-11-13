@@ -2,6 +2,8 @@ import socket
 import pickle
 import sys
 import select
+import time
+import platform 
 from messaging.message import Message
 from messaging.move_message import MoveMessage 
 from messaging.suggestion_message import SuggestionMessage
@@ -9,6 +11,9 @@ from messaging.accusation_message import AccusationMessage
 from messaging.disprove_suggestion_message import DisproveSuggestionMessage
 
 class CluelessClient:
+
+    rooms = ['study', 'hall', 'lounge', 'dining room', 'kitchen', 'ballroom', 'conservatory', 'library', 'billard room']
+
     def __init__(self, host, port):
         self.host = host
         self.port = port
@@ -141,7 +146,7 @@ if __name__ == "__main__":
         pass
 
     print(f"Welcome to Clue-Less!\n")
-    original_character_name = input("Please enter your character name: ")
+    original_character_name = input("Please enter your character name | miss scarlet (!), colonel mustard ($), missus white (*), mister green (^), missus peacock (@), professor plum (&): ")
     original_character_name = original_character_name.title()
 
     while True:
@@ -275,9 +280,9 @@ if __name__ == "__main__":
                 disprove_suggestion_message.printMessage()
                 client.send_message(disprove_suggestion_message)
 
-            elif (initial_message != 'exit'):
-                print(f"Invalid Message Type: {initial_message}")
-
+            #elif (initial_message != 'exit'):
+            #    print(f"Invalid Message Type: {initial_message}")
+            
             if initial_message.lower() == 'exit':
                 break
 
