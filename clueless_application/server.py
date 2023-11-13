@@ -20,11 +20,11 @@ class CluelessServer:
     
     weapons = ['rope', 'lead pipe', 'knife', 'wrench', 'candlestick', 'revolver']
     rooms = ['study', 'hall', 'lounge', 'dining room', 'kitchen', 'ballroom', 'conservatory', 'library', 'billiard room']
-    roomsWithSpacesForHallways = ['study', 'hallway', 'hall', 'hallway', 'lounge', 
-                                   'hallway', ' ', 'hallway', ' ', 'hallway', 
-                                   'library', 'hallway', 'billiard room', 'hallway', 'dining room', 
-                                   'hallway', ' ', 'hallway', ' ', 'hallway', 
-                                   'conservatory', 'hallway', 'ballroom', 'hallway', 'kitchen']
+    self.roomsWithSpacesForHallwaysways = ['study', 'hallway', 'hall', 'hallway', 'lounge', 
+        'hallway', ' ', 'hallway', ' ', 'hallway', 
+        'library', 'hallway', 'billiard room', 'hallway', 'dining room', 
+        'hallway', ' ', 'hallway', ' ', 'hallway', 
+        'conservatory', 'hallway', 'ballroom', 'hallway', 'kitchen']
     characters = ['miss scarlet', 'colonel mustard', 'missus white', 'mister green', 'missus peacock', 'professor plum']
     answerArray = []
 
@@ -213,12 +213,6 @@ class CluelessServer:
         self.socket.bind((self.host, self.port))
         self.socket.listen(6)
         print(f"Server is listening on {self.host}:{self.port}")
-
-        ROOMS_WITH_SPACES_FOR_HALLS = ['study', 'hallway', 'hall', 'hallway', 'lounge', 
-            'hallway', ' ', 'hallway', ' ', 'hallway', 
-            'library', 'hallway', 'billiard room', 'hallway', 'dining room', 
-            'hallway', ' ', 'hallway', ' ', 'hallway', 
-            'conservatory', 'hallway', 'ballroom', 'hallway', 'kitchen']
         
         CHARACTERS = ['miss scarlet', 'colonel mustard', 'missus white', 'mister green', 'missus peacock', 'professor plum']
         
@@ -229,7 +223,7 @@ class CluelessServer:
         player3 = Character('mister green', 'mister green\'s home square', False, True, [], [])
         charactersList = [player1, player2, player3]
 
-        gameboard.printBoard(ROOMS_WITH_SPACES_FOR_HALLS, charactersList)
+        gameboard.printBoard(self.self.roomsWithSpacesForHallwaysways, charactersList)
 
         roomChoice = Room('lounge', '', False, '')
 
@@ -240,14 +234,16 @@ class CluelessServer:
         hallwayChoiceDifferentOption = Hallway('hallway between hall and lounge', False, '')
         hallwayChoiceLowerBoardOption = Hallway('hallway between conservatory and ballroom', False, '')
 
-        gameboard.updateBoard(ROOMS_WITH_SPACES_FOR_HALLS, player1, charactersList, hallwayChoiceFirstOptionFirstAttempt)
-        gameboard.printBoard(ROOMS_WITH_SPACES_FOR_HALLS, charactersList)
-        gameboard.updateBoard(ROOMS_WITH_SPACES_FOR_HALLS, player2, charactersList, hallwayChoiceFirstOptionSecondAttempt)
-        gameboard.printBoard(ROOMS_WITH_SPACES_FOR_HALLS, charactersList)
-        gameboard.updateBoard(ROOMS_WITH_SPACES_FOR_HALLS, player2, charactersList, hallwayChoiceDifferentOption)
-        gameboard.printBoard(ROOMS_WITH_SPACES_FOR_HALLS, charactersList)
-        gameboard.updateBoard(ROOMS_WITH_SPACES_FOR_HALLS, player3, charactersList, hallwayChoiceLowerBoardOption)
-        gameboard.printBoard(ROOMS_WITH_SPACES_FOR_HALLS, charactersList)
+        # Content area for gameboard aspect of minimal demo (non-exhaustive)
+        # Additional formatting to come
+        gameboard.updateBoard(self.roomsWithSpacesForHallwaysways, player1, charactersList, hallwayChoiceFirstOptionFirstAttempt)
+        gameboard.printBoard(self.roomsWithSpacesForHallwaysways, charactersList)
+        gameboard.updateBoard(self.roomsWithSpacesForHallwaysways, player2, charactersList, hallwayChoiceFirstOptionSecondAttempt)
+        gameboard.printBoard(self.roomsWithSpacesForHallwaysways, charactersList)
+        gameboard.updateBoard(self.roomsWithSpacesForHallwaysways, player2, charactersList, hallwayChoiceDifferentOption)
+        gameboard.printBoard(self.roomsWithSpacesForHallwaysways, charactersList)
+        gameboard.updateBoard(self.roomsWithSpacesForHallwaysways, player3, charactersList, hallwayChoiceLowerBoardOption)
+        gameboard.printBoard(self.roomsWithSpacesForHallwaysways, charactersList)
 
         while True:
             client, addr = self.socket.accept()
