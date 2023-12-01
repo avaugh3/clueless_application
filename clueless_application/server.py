@@ -67,7 +67,6 @@ class CluelessServer:
             character.location = location
             #TODO: Update UI
         """
-    
 
         """
          Server will need to get the room the Character is making the Suggestion in 
@@ -236,14 +235,18 @@ class CluelessServer:
 
         # Content area for gameboard aspect of minimal demo (non-exhaustive)
         # Additional formatting to come
-        gameboard.updateBoard(self.roomsWithSpacesForHallwaysways, player1, charactersList, hallwayChoiceFirstOptionFirstAttempt)
-        gameboard.printBoard(self.roomsWithSpacesForHallwaysways, charactersList)
-        gameboard.updateBoard(self.roomsWithSpacesForHallwaysways, player2, charactersList, hallwayChoiceFirstOptionSecondAttempt)
-        gameboard.printBoard(self.roomsWithSpacesForHallwaysways, charactersList)
-        gameboard.updateBoard(self.roomsWithSpacesForHallwaysways, player2, charactersList, hallwayChoiceDifferentOption)
-        gameboard.printBoard(self.roomsWithSpacesForHallwaysways, charactersList)
-        gameboard.updateBoard(self.roomsWithSpacesForHallwaysways, player3, charactersList, hallwayChoiceLowerBoardOption)
-        gameboard.printBoard(self.roomsWithSpacesForHallwaysways, charactersList)
+
+        # printBoard - rooms, halls, list of characters
+        # updateBoard - rooms, halls, Character, CharacerList 
+
+        gameboard.updateBoard(self.roomsWithSpacesForHallways, player1, charactersList, hallwayChoiceFirstOptionFirstAttempt)
+        gameboard.printBoard(self.roomsWithSpacesForHallways, charactersList)
+        gameboard.updateBoard(self.roomsWithSpacesForHallways, player2, charactersList, hallwayChoiceFirstOptionSecondAttempt)
+        #gameboard.printBoard(self.roomsWithSpacesForHallways, charactersList)
+        #gameboard.updateBoard(self.roomsWithSpacesForHallways, player2, charactersList, hallwayChoiceDifferentOption)
+        #gameboard.printBoard(self.roomsWithSpacesForHallways, charactersList)
+        #gameboard.updateBoard(self.roomsWithSpacesForHallways, player3, charactersList, hallwayChoiceLowerBoardOption)
+        #gameboard.printBoard(self.roomsWithSpacesForHallways, charactersList)
 
         while True:
             client, addr = self.socket.accept()

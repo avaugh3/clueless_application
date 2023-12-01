@@ -9,10 +9,15 @@ from messaging.move_message import MoveMessage
 from messaging.suggestion_message import SuggestionMessage
 from messaging.accusation_message import AccusationMessage
 from messaging.disprove_suggestion_message import DisproveSuggestionMessage
+from Inventory.character import Character 
+from Inventory.room import Room 
+from Inventory.hallway import Hallway
+from gameboard.gameboard import Gameboard
 
 class CluelessClient:
 
     rooms = ['study', 'hall', 'lounge', 'dining room', 'kitchen', 'ballroom', 'conservatory', 'library', 'billard room']
+    InputPromptCounter = 0
 
     def __init__(self, host, port):
         self.host = host
@@ -101,14 +106,15 @@ class CluelessClient:
     def inputWithTimeout(self, prompt, timeout, print_prompt=True):
         if print_prompt:
             print(prompt)
-
         start_time = time.time()
         input_data = None
 
         while True:
             if platform.system() == 'Windows':
                 import msvcrt
-                if msvcrt.kbhit():
+                if not msvcrt.kbhit():
+                    print("msvcrt.kbhit")
+                    print(msvcrt.kbhit)
                     input_data = msvcrt.getche().decode()
                     break
             else:
@@ -117,10 +123,12 @@ class CluelessClient:
                 if rlist:
                     input_data = sys.stdin.readline().rstrip('\n')
                     break
+                #print("Inside Windows check - else block")
 
             if time.time() - start_time > timeout:
                 break
-
+        #print("----------")
+        #print(input_data)
         return input_data
 
 if __name__ == "__main__":
@@ -159,7 +167,8 @@ if __name__ == "__main__":
         except:
             pass
 
-        initial_message = client.inputWithTimeout("Enter a message (options: move, suggestion, accusation, disprove) or quit the game (type 'exit'): ", INPUT_TIMEOUT, print_prompt)
+        #initial_message = client.inputWithTimeout("Enter a message (options: move, suggestion, accusation, disprove) or quit the game (type 'exit'): ", INPUT_TIMEOUT, print_prompt)
+        initial_message = input("Enter a message (options: move, suggestion, accusation, disprove) or quit the game (type 'exit'): ")
         print_prompt = False
 
         if (initial_message != None):
@@ -280,8 +289,8 @@ if __name__ == "__main__":
                 disprove_suggestion_message.printMessage()
                 client.send_message(disprove_suggestion_message)
 
-            #elif (initial_message != 'exit'):
-            #    print(f"Invalid Message Type: {initial_message}")
+            elif (initial_message != 'exit'):
+                print(f"Invalid Message Type: {initial_message}")
             
             if initial_message.lower() == 'exit':
                 break
