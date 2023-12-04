@@ -4,3 +4,15 @@ class Room:
         self.location = location
         self.occupied = occupied
         self.occupiedBy = occupiedBy
+
+   def joinRoom(self, character):
+      self.occupied = True
+      self.occupiedBy.add(character)
+      character.updatelocation(self.location)
+      # update Game board 
+   
+   def leaveRoom(self, character):
+      self.occupiedBy.remove(character)
+      if (self.occupiedBy.length == 0):
+         self.occupied = False
+      

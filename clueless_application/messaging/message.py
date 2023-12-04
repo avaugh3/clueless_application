@@ -1,5 +1,5 @@
 class Message:
-    def __init__(self, type, originalCharacterName, contents):
+    def __init__(self, type, originalCharacterName=None, contents=None):
         self.type = type
         self.originalCharacterName = originalCharacterName
         self.contents = contents
