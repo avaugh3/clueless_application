@@ -13,6 +13,19 @@ from Inventory.inventory import Inventory
 def consoleOutput(message):
     outputtext.insert(END, message + '\n')
 
+def checkServer():
+    #lab['text'] = time
+    try:
+        data = client.socket.recv(2048) #recv(1024).decode('utf-8')
+        if data:
+            client.processMessage(data)
+            print_prompt = True
+            consoleOutput(data)
+    except:
+        pass
+    #root.after(500, checkServer)
+ # run itself again after 1000 ms
+    
     
 def moveMessage():
     printLine = 'window sending move ' + inputValMove.get()
@@ -47,6 +60,9 @@ def disproveMessage():
     is_disprove_suggestion_possible = is_disprove_suggestion_possible.capitalize()
     if(disproveInput.get().capitalize != 'FALSE'):
         is_disprove_suggestion_possible = 'TRUE'
+    else: 
+        is_disprove_suggestion_possible = 'FALSE'
+        #TODO: figure out correct game play
     contents["canDisproveSuggestion"] = is_disprove_suggestion_possible 
 
     print(is_disprove_suggestion_possible)
@@ -89,6 +105,7 @@ def accusationMessage():
         accusation_message = Message("accusation", original_character_name, contents)
         #accusation_message.printMessage()
         client.send_message(accusation_message)
+
 if __name__ == "__main__":
     INPUT_TIMEOUT = 1 #seconds
     print_prompt = True
@@ -113,13 +130,14 @@ if __name__ == "__main__":
     client.playerName = original_character_name
     ready_message = Message("ready", original_character_name, None)
     client.send_message(ready_message)
+    #TODO: figure out how to get user to be ready?
     client.ready = True
     #Check for server message each loop iteration
     try:
         data = client.socket.recv(2048) #recv(1024).decode('utf-8')
         if data:
             client.processMessage(data)
-
+            consoleOutput(data)
             print_prompt = True
     except:
         pass
@@ -144,88 +162,6 @@ if __name__ == "__main__":
         client.send_message(ready_message)
         client.ready = True
                     
-    '''
-    elif initial_message == 'move':
-        move_selection = input("Enter direction to move: ")
-        contents["direction"] = move_selection 
-        contents["currentLocation"] = client.boardLocation
-            
-        move_message = Message("move", original_character_name, contents)
-        #move_message.printMessage()
-        client.send_message(move_message)
-    
-    elif initial_message == 'suggestion':
-        suggestion_suspect = input("Choose a Suspect: (options: Miss Scarlet, Colonel Mustard, Missus White, Mister Green, Missus Peacock, Professor Plum): ")
-        suggestion_suspect = suggestion_suspect.title()
-        contents["suspect"] = suggestion_suspect
-
-        suggestion_weapon = input("Choose a Weapon: (options: Candlestick, Dagger, Revolver, Lead Pipe, Wrench, Rope): ")
-        suggestion_weapon.replace(" ", "").lower()
-        contents["weapon"] = suggestion_weapon 
-
-        suggestion = f"I suggest the crime was committed in {client.boardLocation} by " + contents["suspect"] + " with the " + contents["weapon"]
-        contents["suggestionMessageText"] = suggestion 
-
-        suggestion_message = Message("suggestion", original_character_name, contents)
-        #suggestion_message.printMessage()
-        client.send_message(suggestion_message)
-    '''
-    '''
-    elif initial_message == 'accusation':
-        accusation_suspect = input("Choose a Suspect: (options: Miss Scarlet, Colonel Mustard, Missus White, Mister Green, Missus Peacock, Professor Plum): ")
-        accusation_suspect = accusation_suspect.title()
-        contents["suspect"] = accusation_suspect
-
-        accusation_room = input("Choose a Room: (options: Hall, Lounge, Dining Room, Study, Kitchen, Ballroom, Conservatory, Billard Room, Library): ")
-        accusation_room = accusation_room.title()
-        contents["room"] = accusation_room 
-
-        accusation_weapon = input("Choose a Weapon: (options: Candlestick, Dagger, Revolver, Lead Pipe, Wrench, Rope): ")
-        accusation_weapon.replace(" ", "").lower()
-        contents["weapon"] = accusation_weapon 
-
-        accusation = "I accuse " + contents["suspect"] + " of committing the crime in the " + contents["room"] + " with the " + contents["weapon"]
-        contents["accusationMessageText"] = accusation
-
-        accusation_message = Message("accusation", original_character_name, contents)
-        #accusation_message.printMessage()
-        client.send_message(accusation_message)
-        '''
-    ''''
-        elif initial_message == 'disprove':
-        initial_message.replace(" ", "_").lower()
-
-        is_disprove_suggestion_possible = input("Can you disprove the Suggestion? (true/false): ")
-        is_disprove_suggestion_possible = is_disprove_suggestion_possible.capitalize()
-        contents["canDisproveSuggestion"] = is_disprove_suggestion_possible 
-
-        print(is_disprove_suggestion_possible)
-
-        if is_disprove_suggestion_possible:
-    
-        #item_type = input("Which inventory item type do you have? (options: Suspect, Room, Weapon): ")
-        #inventory_type_to_disprove_suggestion = inventory_type_to_disprove_suggestion.capitalize()
-
-            disprove_item = input("What is the specific value of the inventory item? (e.g., Dagger, Colonel Mustard, Lounge): ")
-
-        #Just add itemType and item to message contents --------------
-                        #contents['itemType'] = inventory_type_to_disprove_suggestion
-            contents['item'] = disprove_item
-                        #-------------------------------------------------------------
-
-            if (disprove_item.replace(" ","").lower() in client.characterInventory or disprove_item.replace(" ","").lower() in client.roomInventory or disprove_item.replace(" ","").lower() in client.weaponInventory):
-                disprove_message = Message("disprove", original_character_name, contents)
-                        #disprove_message.printMessage()
-                client.send_message(disprove_message)
-            else:
-                print(f"You do not have item \"{disprove_item}\" in your inventory. Please enter a different item.")
-
-        elif (initial_message != 'exit'):
-            print(f"Invalid Message Type: {initial_message}")
-        '''
-    #    if initial_message.lower() == 'exit':
-     
-     #       break
     #*****************************************#
     #****************************************#
     #*********Window implementation **********#
@@ -317,4 +253,7 @@ if __name__ == "__main__":
     accusationInput = StringVar()
     UserInputAccusation = Entry(root, textvariable=accusationInput, font=("arial", 15), width=30).grid(column=0, row=20, columnspan=5)
     accusationButton = Button(root, text="Make Accusation", command=accusationMessage).grid(column=4, row=20, columnspan=5)
-    root.mainloop()
+    while True: 
+        checkServer()
+        root.mainloop()
+        checkServer()
