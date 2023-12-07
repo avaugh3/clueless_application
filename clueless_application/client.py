@@ -235,4 +235,4 @@ if __name__ == "__main__":
             if initial_message.lower() == 'exit':
                 break
 
-    client.close()
+client.close()

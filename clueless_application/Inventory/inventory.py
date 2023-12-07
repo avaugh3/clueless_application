@@ -1,6 +1,6 @@
 class Inventory: 
     items = ['Room1', 'Room2', 'Character1', 'weapon2']
-    def __init__(self, items):
+    def __init__(self, items=None):
         self.items = items 
 
     def addItem(self, item):

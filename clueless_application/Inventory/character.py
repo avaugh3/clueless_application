@@ -1,14 +1,7 @@
 class Character:
-    name = 'Megan Rutch'
-    location = ''
-    madeAccusation = False
-    turn = False
-    inventory = []
-    history = []
-
-    def __init__(self, name, location):
-        self.titleName = titleName
-        self.location = location
+    def __init__(self, name=None, location=None):
+        self.titleName = ''
+        self.location = ''
         self.madeAccusation = False
         self.turn = False
         self.inventory = []
