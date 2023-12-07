@@ -21,7 +21,8 @@ class CluelessClient:
         self.characterInventory = []
         self.roomInventory = []
         self.weaponInventory = []
-        self.ready = False
+        #self.ready = False
+        self.ready = True
         self.gameStarted = False
         
 
