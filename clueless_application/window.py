@@ -2,6 +2,7 @@ from client import CluelessClient
 import tkinter as tk
 from tkinter import *
 import datetime
+import threading
 from messaging.message import Message
 from Inventory.character import Character
 from Inventory.inventory import Inventory
@@ -13,30 +14,29 @@ from Inventory.inventory import Inventory
 def consoleOutput(message):
     outputtext.insert(END, message + '\n')
 
-def checkServer():
-    #lab['text'] = time
-    try:
-        data = client.socket.recv(2048) #recv(1024).decode('utf-8')
-        if data:
-            client.processMessage(data)
-            print_prompt = True
-            consoleOutput(data)
-    except:
-        pass
-    #root.after(500, checkServer)
- # run itself again after 1000 ms
-    
+def checkServer(player):
+    while True:
+        try:
+            data = player.socket.recv(2048)
+            if data:
+                player.processMessage(data, outputtext, END)
+        except:
+            pass
     
 def moveMessage():
-    printLine = 'window sending move ' + inputValMove.get()
-    consoleOutput(printLine)
+    contents = {}
+    #printLine = 'window sending move ' + inputValMove.get()
+    #consoleOutput(printLine)
     contents["direction"] = inputValMove.get()
     contents["currentLocation"] = client.boardLocation
+    printLine = f"Player {original_character_name} requests move {contents['direction']} from {contents['currentLocation']}"
+    consoleOutput(printLine)
     move_message = Message("move", original_character_name, contents)
     #consoleOutput(move_message)
     client.send_message(move_message)
     
 def suggesstionMessage():
+    contents = {}
     printLine = 'window sending suggestion' + inputValSuggesstion.get()
     consoleOutput(printLine)
     suggestArray = inputValSuggesstion.get().split(', ')
@@ -54,7 +54,8 @@ def suggesstionMessage():
     client.send_message(suggestion_message)
 
 def disproveMessage():
-    initial_message.replace(" ", "_").lower()
+    contents = {}
+    #initial_message.replace(" ", "_").lower()
 
     is_disprove_suggestion_possible = disproveInput.get()
     is_disprove_suggestion_possible = is_disprove_suggestion_possible.capitalize()
@@ -87,6 +88,8 @@ def disproveMessage():
             consoleOutput(f"You do not have item \"{disprove_item}\" in your inventory. Please enter a different item.")
 
 def accusationMessage():
+        contents = {}
+
         printLine = 'window sending accusation' + inputValSuggesstion.get()
         consoleOutput(printLine)
         accusationArray = printLine.split(', ')
@@ -128,45 +131,28 @@ if __name__ == "__main__":
     original_character_name = original_character_name.title()
     client.character.name = original_character_name
     client.playerName = original_character_name
-    ready_message = Message("ready", original_character_name, None)
-    client.send_message(ready_message)
-    #TODO: figure out how to get user to be ready?
-    client.ready = True
+    
+    client.ready = False
     #Check for server message each loop iteration
-    try:
-        data = client.socket.recv(2048) #recv(1024).decode('utf-8')
-        if data:
-            client.processMessage(data)
-            consoleOutput(data)
-            print_prompt = True
-    except:
-        pass
+    while True:
+        if (not client.ready):
+            initial_message = client.inputWithTimeout("Type 'Ready' to Notify Server You are Ready to Begin: ", INPUT_TIMEOUT, print_prompt)
+            print_prompt = False
             
-    if (client.ready and client.gameStarted):
-        initial_message = client.inputWithTimeout("Enter a message (options: move, suggestion, accusation, disprove) or quit the game (type 'exit'): ", INPUT_TIMEOUT, print_prompt)
-        print_prompt = False
-    elif (not client.ready):
-        initial_message = client.inputWithTimeout("Type 'Ready' to Notify Server You are Ready to Begin: ", INPUT_TIMEOUT, print_prompt)
-        print_prompt = False
-    else:
-        initial_message = 'ready'
-            #    initial_message = client.inputWithTimeout("Waiting for Server to start game...", INPUT_TIMEOUT, print_prompt)
-             #   print_prompt = False
-        
-    if (initial_message != None):
-        print_prompt = True
-        contents = {}
-                
-    if initial_message == 'ready':
-        ready_message = Message("ready", original_character_name, None)
-        client.send_message(ready_message)
-        client.ready = True
+        if (initial_message != None):
+            print_prompt = True
+            contents = {}
                     
+        if initial_message == 'ready':
+            ready_message = Message("ready", original_character_name, None)
+            client.send_message(ready_message)
+            client.ready = True
+            break
+    
+
     #*****************************************#
     #****************************************#
     #*********Window implementation **********#
-
-
 
     # root window (main window)
     root = tk.Tk()
@@ -196,7 +182,6 @@ if __name__ == "__main__":
     for i in inventoryList:
         Label(root, text = "● "+i).grid(row = value, column=0, pady=2)
         value = value + 1
-
 
     #Display Checklist of all possible items
     RoomItems = ['Study', 'Hall','Lounge','Dining Room', 'Kitchen','Ballroom','Conservatory', 'Library']
@@ -233,14 +218,16 @@ if __name__ == "__main__":
     gameInputTitle = Label(root, text="\nInput From Game")
     gameInputTitle.config(font=("Courier", 15))
     gameInputTitle.grid(row = 15, column=1, sticky='', columnspan = 3, pady=2)
+
     # prints out instructions
     InstructionsLabel = Label(root, text="Enter below in the corresponding action input box what action you want to take")
     InstructionsLabel.grid(column = 1, row = 16, columnspan=3)
     inputValMove = StringVar()
+
     # sets up entry message
     UserInput = Entry(root, textvariable=inputValMove, font=("arial", 15), width=30).grid(column=0, row=17, columnspan=5)
-
     movebutton = Button(root, text="Make a Move", command=moveMessage).grid(column=4, row=17, columnspan=5)
+
     # suggesstion
     inputValSuggesstion = StringVar()
     UserInputSuggest = Entry(root, textvariable=inputValSuggesstion, font=("arial", 15), width=30).grid(column=0, row=18, columnspan=5)
@@ -253,7 +240,10 @@ if __name__ == "__main__":
     accusationInput = StringVar()
     UserInputAccusation = Entry(root, textvariable=accusationInput, font=("arial", 15), width=30).grid(column=0, row=20, columnspan=5)
     accusationButton = Button(root, text="Make Accusation", command=accusationMessage).grid(column=4, row=20, columnspan=5)
-    while True: 
-        checkServer()
-        root.mainloop()
-        checkServer()
+    
+    #Start thread to listen for messages from server
+    data_thread = threading.Thread(target=checkServer, args=(client,))
+    data_thread.start()
+
+    root.mainloop()
+    

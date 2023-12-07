@@ -37,12 +37,8 @@ class CluelessClient:
         pickled_msg = pickle.dumps(message)
         
         self.socket.send(pickled_msg)
-        #response = self.socket.recv(1024).decode('utf-8')
-        
-        #Server Response
-        #print(response)
 
-    def processMessage(self, message):
+    def processMessage(self, message, textbox, END):
         loaded_msg = pickle.loads(message)
 
         if (loaded_msg.type == "updateLocation"):
@@ -51,6 +47,7 @@ class CluelessClient:
 
         elif (loaded_msg.type == "info"):
             print(loaded_msg.contents["info"])
+            textbox.insert(END, loaded_msg.contents["info"] + '\n')
 
         elif (loaded_msg.type == "loadInventory"):
             print("Loading Client Inventory")
