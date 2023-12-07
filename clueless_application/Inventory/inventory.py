@@ -10,7 +10,7 @@ class Inventory:
     
     def shareItem(self, item):
         # not sure how to implement this 
-        for values in items: 
+        for values in self.items: 
             if values == item: 
                 print('item in inventory send message to next client')
 
