@@ -132,7 +132,8 @@ if __name__ == "__main__":
     client.character.name = original_character_name
     client.playerName = original_character_name
     
-    client.ready = False
+    client.ready = True
+    initial_message = 'ready'
     #Check for server message each loop iteration
     while True:
         if (not client.ready):
