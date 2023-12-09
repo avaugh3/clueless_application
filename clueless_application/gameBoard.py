@@ -273,7 +273,7 @@ if __name__ == '__main__':
 
         #show the gameboard in the Canvas
         coordinate = printGameBoard(viewCanvas)
-        displayCoordinateForCellClicked(3, 1, viewCanvas)
+        #displayCoordinateForCellClicked(0, 0, viewCanvas)
     
     contextForGameBoard = displayContextForGameBoard(root)
     contextForGameBoard.config(bg='#f2d2a9')
@@ -292,8 +292,8 @@ if __name__ == '__main__':
     b.place(x=100, y=115, anchor=NW)
 
     # temp testing to show Miss Scarlet in the hallway between the Hall and Lounge
-    missScarlet=Button(root, text='mrs. scarlet')
-    missScarletPhoto=PhotoImage(file='mrs-scarlet-with-name.png')
+    missScarlet=Button(root, text='miss scarlet')
+    missScarletPhoto=PhotoImage(file='miss-scarlet-with-name.png')
     missScarlet.config(image=missScarletPhoto, width='70', height='70')
     missScarlet.place_forget()
 
@@ -308,12 +308,12 @@ if __name__ == '__main__':
     mrsPeacock.place_forget()
 
     mrGreen=Button(root, text='mr. green')
-    mrGreenPhoto=PhotoImage(file='mr-green-with-name-next.png')
+    mrGreenPhoto=PhotoImage(file='mr-green-with-name.png')
     mrGreen.config(image=mrGreenPhoto, width='70', height='70')
     mrGreen.place_forget()
 
     mrsWhite=Button(root, text='mrs. white')
-    mrsWhitePhoto=PhotoImage(file='mrs-white-with-name-next.png')
+    mrsWhitePhoto=PhotoImage(file='mrs-white-with-name.png')
     mrsWhite.config(image=mrsWhitePhoto, width='70', height='70')
     mrsWhite.place_forget()
 
