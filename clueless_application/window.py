@@ -20,6 +20,7 @@ def checkServer(player):
             data = player.socket.recv(2048)
             if data:
                 player.processMessage(data, outputtext, END)
+                inventoryList = client.inventory.getItems()
         except:
             pass
     
@@ -37,13 +38,10 @@ def moveMessage():
     
 def suggesstionMessage():
     contents = {}
-    printLine = 'window sending suggestion' + inputValSuggesstion.get()
-    consoleOutput(printLine)
-    suggestArray = inputValSuggesstion.get().split(', ')
-    suggestion_suspect = suggestArray[0].title()
+    suggestion_suspect = inputValSuggesstionCharacter.get().title()
     contents["suspect"] = suggestion_suspect
 
-    suggestion_weapon = suggestArray[1].lower()
+    suggestion_weapon = inputValSuggesstionWeapon.get().lower()
     contents["weapon"] = suggestion_weapon 
 
     suggestion = f"I suggest the crime was committed in {client.boardLocation} by " + contents["suspect"] + " with the " + contents["weapon"]
@@ -89,17 +87,13 @@ def disproveMessage():
 
 def accusationMessage():
         contents = {}
-
-        printLine = 'window sending accusation' + inputValSuggesstion.get()
-        consoleOutput(printLine)
-        accusationArray = printLine.split(', ')
-        accusation_suspect = accusationArray[0].title()
+        accusation_suspect = accusationInputCharacter.get().title()
         contents["suspect"] = accusation_suspect
 
-        accusation_room = accusationArray[1].title()
+        accusation_room = accusationInputRoom.get().title()
         contents["room"] = accusation_room 
 
-        accusation_weapon = accusationArray[2].replace(" ", "").lower()
+        accusation_weapon = accusationInputWeapon.get().replace(" ", "").lower()
         contents["weapon"] = accusation_weapon 
 
         accusation = "I accuse " + contents["suspect"] + " of committing the crime in the " + contents["room"] + " with the " + contents["weapon"]
@@ -175,18 +169,22 @@ if __name__ == "__main__":
     #Display Characters inventory
     #TODO get the inventory lists function to display right
     #inventoryList = client.inventory.getItems()
-    inventoryList = ['item1', 'teste2', 'weapon2']
+    inventoryList =['lead pipe', 'revolver', 'weapon2']
     inventoryLabel = Label(root, text="Your Inventory")
     inventoryLabel.config(font=("Courier", 15))
     inventoryLabel.grid(row = 2, column=0, sticky='', columnspan = 1)
     value = 3
-    for i in inventoryList:
-        Label(root, text = "● "+i).grid(row = value, column=0, pady=2)
-        value = value + 1
+    if inventoryList != None:
+        for i in inventoryList:
+            Label(root, text = "● "+i).grid(row = value, column=0, pady=2)
+            value = value + 1
+    else: 
+        inventoryList = []
+        Label(root, text = "awaiting inventory").grid(row = 3, column=0, pady=2)
 
     #Display Checklist of all possible items
     RoomItems = ['Study', 'Hall','Lounge','Dining Room', 'Kitchen','Ballroom','Conservatory', 'Library']
-    characterItems = ['Miss Scarlet','Col. Mustard', 'Mrs. White','Mr. Green', 'Mrs. Peacock', 'Prof. Plum'] 
+    characterItems = ['Miss Scarlet','Colonel Mustard', 'Missus White','Mr. Green', 'Missus Peacock', 'Professor Plum'] 
     weaponItems = ['Rope', 'Lead Pipe', 'Knife', 'Wrench', 'Candlestick', 'Revolver']
     checklist = Label(root, text="Item Checklists")
     checklist.config(font=("Courier", 15))
@@ -226,20 +224,28 @@ if __name__ == "__main__":
     inputValMove = StringVar()
 
     # sets up entry message
-    UserInput = Entry(root, textvariable=inputValMove, font=("arial", 15), width=30).grid(column=0, row=17, columnspan=5)
+    UserInput = OptionMenu(root, inputValMove, "up", "down", "right", "left", "secret passage").grid(column=0, row=17, columnspan=5)
     movebutton = Button(root, text="Make a Move", command=moveMessage).grid(column=4, row=17, columnspan=5)
 
     # suggesstion
-    inputValSuggesstion = StringVar()
-    UserInputSuggest = Entry(root, textvariable=inputValSuggesstion, font=("arial", 15), width=30).grid(column=0, row=18, columnspan=5)
+    inputValSuggesstionCharacter = StringVar()
+    inputValSuggesstionWeapon = StringVar()
+    userInputCharacterSuggest = OptionMenu(root, inputValSuggesstionCharacter, *characterItems).grid(column=0, row=18, columnspan=1)
+    UserInputSuggestWeapon = OptionMenu(root, inputValSuggesstionWeapon, *weaponItems).grid(column=1, row=18, columnspan=5)
     suggestButton = Button(root, text="Make a Suggestion", command=suggesstionMessage).grid(column=4, row=18, columnspan=5)
     
+    #Disprove Set Up 
     disproveInput = StringVar()
-    UserInputDisprove = Entry(root, textvariable=disproveInput, font=("arial", 15), width=30).grid(column=0, row=19, columnspan=5)
+    UserInputDisprove = OptionMenu(root, disproveInput, *inventoryList).grid(column=0, row=19, columnspan=5)
     disproveButton = Button(root, text="Disprove", command=disproveMessage).grid(column=4, row=19, columnspan=5)
     
-    accusationInput = StringVar()
-    UserInputAccusation = Entry(root, textvariable=accusationInput, font=("arial", 15), width=30).grid(column=0, row=20, columnspan=5)
+    #Accusation Set Up 
+    accusationInputCharacter = StringVar()
+    accusationInputWeapon = StringVar()
+    accusationInputRoom = StringVar()
+    UserInputAccusationCharacter = OptionMenu(root, accusationInputCharacter, *characterItems).grid(column=0, row=20, columnspan=5)
+    UserInputAccusationWeapon = OptionMenu(root, accusationInputWeapon, *weaponItems).grid(column=0, row=20, columnspan=5)
+    UserInputAccusationRoom = OptionMenu(root, accusationInputRoom, *RoomItems).grid(column=0, row=20, columnspan=5)
     accusationButton = Button(root, text="Make Accusation", command=accusationMessage).grid(column=4, row=20, columnspan=5)
     
     #Start thread to listen for messages from server
