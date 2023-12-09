@@ -183,8 +183,8 @@ if __name__ == "__main__":
         Label(root, text = "awaiting inventory").grid(row = 3, column=0, pady=2)
 
     #Display Checklist of all possible items
-    RoomItems = ['Study', 'Hall','Lounge','Dining Room', 'Kitchen','Ballroom','Conservatory', 'Library']
-    characterItems = ['Miss Scarlet','Colonel Mustard', 'Missus White','Mr. Green', 'Missus Peacock', 'Professor Plum'] 
+    RoomItems = ['Study', 'Hall','Lounge','Dining Room', 'Kitchen','Ballroom','Conservatory', 'Library', 'Billard Room']
+    characterItems = ['Miss Scarlet','Colonel Mustard', 'Missus White','Mister Green', 'Missus Peacock', 'Professor Plum'] 
     weaponItems = ['Rope', 'Lead Pipe', 'Knife', 'Wrench', 'Candlestick', 'Revolver']
     checklist = Label(root, text="Item Checklists")
     checklist.config(font=("Courier", 15))
@@ -222,30 +222,40 @@ if __name__ == "__main__":
     InstructionsLabel = Label(root, text="Enter below in the corresponding action input box what action you want to take")
     InstructionsLabel.grid(column = 1, row = 16, columnspan=3)
     inputValMove = StringVar()
+    inputValMove.set("chose a direction")
 
     # sets up entry message
-    UserInput = OptionMenu(root, inputValMove, "up", "down", "right", "left", "secret passage").grid(column=0, row=17, columnspan=5)
+    directions = ['up', 'down', 'left', 'right', 'secret passage']
+    UserInput = OptionMenu(root, inputValMove, *directions).grid(column=0, row=17, columnspan=5)
     movebutton = Button(root, text="Make a Move", command=moveMessage).grid(column=4, row=17, columnspan=5)
 
     # suggesstion
     inputValSuggesstionCharacter = StringVar()
+    inputValSuggesstionCharacter.set("character option")
     inputValSuggesstionWeapon = StringVar()
-    userInputCharacterSuggest = OptionMenu(root, inputValSuggesstionCharacter, *characterItems).grid(column=0, row=18, columnspan=1)
-    UserInputSuggestWeapon = OptionMenu(root, inputValSuggesstionWeapon, *weaponItems).grid(column=1, row=18, columnspan=5)
+    inputValSuggesstionWeapon.set("weapon option")
+    userInputCharacterSuggest = OptionMenu(root, inputValSuggesstionCharacter, *characterItems).grid(column=1, row=18, columnspan=1)
+    UserInputSuggestWeapon = OptionMenu(root, inputValSuggesstionWeapon, *weaponItems).grid(column=2, row=18, columnspan=2)
     suggestButton = Button(root, text="Make a Suggestion", command=suggesstionMessage).grid(column=4, row=18, columnspan=5)
     
     #Disprove Set Up 
     disproveInput = StringVar()
-    UserInputDisprove = OptionMenu(root, disproveInput, *inventoryList).grid(column=0, row=19, columnspan=5)
+    disproveInput.set("item to disprove")
+    inventoryListNoOption = inventoryList
+    inventoryListNoOption.append("can't disprove suggesstion")
+    UserInputDisprove = OptionMenu(root, disproveInput, *inventoryListNoOption).grid(column=0, row=19, columnspan=5)
     disproveButton = Button(root, text="Disprove", command=disproveMessage).grid(column=4, row=19, columnspan=5)
     
     #Accusation Set Up 
     accusationInputCharacter = StringVar()
+    accusationInputCharacter.set("Character choice")
     accusationInputWeapon = StringVar()
+    accusationInputWeapon.set("Weapon choice")
     accusationInputRoom = StringVar()
-    UserInputAccusationCharacter = OptionMenu(root, accusationInputCharacter, *characterItems).grid(column=0, row=20, columnspan=5)
-    UserInputAccusationWeapon = OptionMenu(root, accusationInputWeapon, *weaponItems).grid(column=0, row=20, columnspan=5)
-    UserInputAccusationRoom = OptionMenu(root, accusationInputRoom, *RoomItems).grid(column=0, row=20, columnspan=5)
+    accusationInputRoom.set("Room Choice")
+    UserInputAccusationCharacter = OptionMenu(root, accusationInputCharacter, *characterItems).grid(column=1, row=20, columnspan=1)
+    UserInputAccusationWeapon = OptionMenu(root, accusationInputWeapon, *weaponItems).grid(column=2, row=20, columnspan=1)
+    UserInputAccusationRoom = OptionMenu(root, accusationInputRoom, *RoomItems).grid(column=3, row=20, columnspan=1)
     accusationButton = Button(root, text="Make Accusation", command=accusationMessage).grid(column=4, row=20, columnspan=5)
     
     #Start thread to listen for messages from server
