@@ -30,7 +30,6 @@ class displayContextForGameBoard(Frame):
         y = (screen_height/2) - (the_height/2)
         self.master.geometry('%dx%d+%d+%d' % (the_width, the_height, x, y))
 
-        #Make the screen appear on top of everything.
         self.master.overrideredirect(True)
         self.lift()
 
@@ -43,11 +42,15 @@ if __name__ == '__main__':
     def displayCoordinateForCellClicked(row, column, canvas):
       canvas.itemconfig(coordinate[(row, column)])
 
-    viewCanvas = Canvas(root, width=root.winfo_screenwidth(), height=root.winfo_screenheight(), bg='#f2d2a9')
+    keyWidth = root.winfo_screenwidth()
+    keyHeight = root.winfo_screenheight()
 
     def getGameBoard():
       #create context for the game board grid
-      return Canvas(root, width=root.winfo_width(), height=root.winfo_height(), bg='#f2d2a9')
+      val = Canvas(root, width=keyWidth, height=keyHeight, bg='#f2d2a9')
+      return val
+
+    viewCanvas = getGameBoard()
 
     # Future: should also make it known which secret passage - based on param2, should be able to get room's coordinates
     # param1: characterName (i.e. room of starting pos)
@@ -222,7 +225,7 @@ if __name__ == '__main__':
                             (row + 1) * gridHeight,
                             fill = 'LightSalmon3')
 
-                            view.create_text(685, 545, text='Kitchen', font=("Courier bold", 16), fill='black')
+                            view.create_text(685, 545, font=("Courier bold", 16), fill='black')
                             view.itemconfig(rect, tags=(str(rowNumber), str(columnNumber)))
                             coordinate[(row,col)]=rect
                     else: 
