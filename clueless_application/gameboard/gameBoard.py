@@ -2,21 +2,16 @@ import tkinter as tk
 from tkinter import *
 import os
 
-#for file in os.listdir("/clueless_application"): 
-#    if file.endswith(".jpg"): 
-#        print(os.path.join("/mydir", file))
-
-#from Inventory.character import Character
-#from Inventory.hallway import Hallway
-#from Inventory.room import Room
-#from images import * 
+from Inventory.character import Character
+from Inventory.hallway import Hallway
+from Inventory.room import Room
 # beginning foundation for tkinter game board: stackoverflow
 
 #### Steps to Display the Clue-Less Game Board (stand-alone)  ####
 # 1. Open a terminal window
 # 2. Navigate to the gameboard directory 
-# 3. Run the gameboard.py file
-#    python3 gameboard.py
+# 3. Run the gameBoard.py file
+#    python3 gameBoard.py
 
 # Set up foundational context frame in which the game board grid sits 
 class displayContextForGameBoard(Frame):
