@@ -37,10 +37,10 @@ if __name__ == '__main__':
     root = tk.Tk()
     root.configure(background='#f2d2a9')
 
-    coordinate={}
+    gameBoard={}
 
     def displayCoordinateForCellClicked(row, column, canvas):
-      canvas.itemconfig(coordinate[(row, column)])
+      canvas.itemconfig(gameBoard[(row, column)])
 
     keyWidth = root.winfo_screenwidth()
     keyHeight = root.winfo_screenheight()
@@ -86,13 +86,13 @@ if __name__ == '__main__':
         #view.update_idletasks()
 
     def startGame():
-        global coordinate
+        global gameBoard
         print("Clue-Less Game Started!")
         contextForGameBoard.pack_forget()
 
         # set up the view of the game board
         def printGameBoard(view):
-            coordinate={}
+            gameBoard={}
             width_to_use=view.winfo_width()
             height_to_use=view.winfo_height()
 
@@ -118,7 +118,7 @@ if __name__ == '__main__':
                         view.create_text(75, 60, text='Study', font=("Courier bold", 16), fill='black')
 
                         view.itemconfig(rect, tags=(str(rowNumber), str(columnNumber)))
-                        coordinate[(row,col)]=rect
+                        gameBoard[(row,col)]=rect
 
                     elif (row == 0 and col == 2):
                         columnNumber = columnNumber + 1
@@ -130,7 +130,7 @@ if __name__ == '__main__':
 
                         view.create_text(380, 65, text='Hall', font=("Courier bold", 16), fill='black')
                         view.itemconfig(rect, tags=(str(rowNumber), str(columnNumber)))
-                        coordinate[(row,col)]=rect
+                        gameBoard[(row,col)]=rect
 
                     elif (row == 0 and col == 4):
                         columnNumber = columnNumber + 1
@@ -142,7 +142,7 @@ if __name__ == '__main__':
 
                         view.create_text(685, 65, text='Lounge', font=("Courier bold", 16), fill='black')
                         view.itemconfig(rect, tags=(str(rowNumber), str(columnNumber)))
-                        coordinate[(row,col)]=rect
+                        gameBoard[(row,col)]=rect
 
                     elif (row == 2 and col == 0):
                         columnNumber = columnNumber + 1
@@ -154,7 +154,7 @@ if __name__ == '__main__':
 
                         view.create_text(75, 255, text='Library', font=("Courier bold", 16), fill='black')
                         view.itemconfig(rect, tags=(str(rowNumber), str(columnNumber)))
-                        coordinate[(row,col)]=rect
+                        gameBoard[(row,col)]=rect
 
                     elif (row == 2 and col == 2):
                         columnNumber = columnNumber + 1
@@ -166,7 +166,7 @@ if __name__ == '__main__':
 
                         view.create_text(380, 255, text='Billiard Room', font=("Courier bold", 16), fill='black')
                         view.itemconfig(rect, tags=(str(rowNumber), str(columnNumber)))
-                        coordinate[(row,col)]=rect
+                        gameBoard[(row,col)]=rect
 
                     elif (row == 2 and col == 4):
                         columnNumber = columnNumber + 1
@@ -178,7 +178,7 @@ if __name__ == '__main__':
 
                         view.create_text(685, 255, text='Dining Room', font=("Courier bold", 16), fill='black')
                         view.itemconfig(rect, tags=(str(rowNumber), str(columnNumber)))
-                        coordinate[(row,col)]=rect
+                        gameBoard[(row,col)]=rect
 
                     elif (row == 4 and col == 0):
                         columnNumber = columnNumber + 1
@@ -190,7 +190,7 @@ if __name__ == '__main__':
 
                         view.create_text(75, 450, text='Conservatory', font=("Courier bold", 16), fill='black')
                         view.itemconfig(rect, tags=(str(rowNumber), str(columnNumber)))
-                        coordinate[(row,col)]=rect
+                        gameBoard[(row,col)]=rect
 
                     elif (row == 4 and col == 2):
                         columnNumber = columnNumber + 1
@@ -202,7 +202,7 @@ if __name__ == '__main__':
 
                         view.create_text(380, 450, text='Ballroom', font=("Courier bold", 16), fill='black')
                         view.itemconfig(rect, tags=(str(rowNumber), str(columnNumber)))
-                        coordinate[(row,col)]=rect
+                        gameBoard[(row,col)]=rect
 
                     elif (row == 4 and col == 4):
                         columnNumber = columnNumber + 1
@@ -214,7 +214,7 @@ if __name__ == '__main__':
 
                         view.create_text(685, 450, text='Kitchen', font=("Courier bold", 16), fill='black')
                         view.itemconfig(rect, tags=(str(rowNumber), str(columnNumber)))
-                        coordinate[(row,col)]=rect
+                        gameBoard[(row,col)]=rect
 
                     elif ((row == 0 and col == 1) or (row == 0 and col == 3) or (row == 1 and col ==0) or (row == 1 and col == 2) or (row == 2 and col == 3) or (row == 3 and col == 0) or (row == 3 and col == 2) or (row == 3 and col == 4) or (row == 2 and col == 1)
                         or (row == 2 and col == 3) or (row == 1 and col == 2) or (row == 1 and col == 4) or (row == 4 and col == 1) or (row == 4 and col == 3)):
@@ -227,7 +227,7 @@ if __name__ == '__main__':
 
                             view.create_text(685, 545, font=("Courier bold", 16), fill='black')
                             view.itemconfig(rect, tags=(str(rowNumber), str(columnNumber)))
-                            coordinate[(row,col)]=rect
+                            gameBoard[(row,col)]=rect
                     else: 
                         columnNumber = columnNumber + 1
                         rect = view.create_rectangle(col * gridWidth,
@@ -237,8 +237,10 @@ if __name__ == '__main__':
                         fill = 'grey')
 
                         view.itemconfig(rect, tags=(str(rowNumber), str(columnNumber)))
-                        coordinate[(row,col)]=rect
-            return coordinate
+                        gameBoard[(row,col)]=rect
+            print("gameBoard")
+            print(gameBoard)
+            return gameBoard
         
         viewCanvas.pack(side=TOP, fill=BOTH, padx=120, pady=120)
         print(viewCanvas.gettags(CURRENT))
@@ -274,24 +276,23 @@ if __name__ == '__main__':
         root.update_idletasks()
 
         #show the gameboard in the Canvas
-        coordinate = printGameBoard(viewCanvas)
-        #displayCoordinateForCellClicked(0, 0, viewCanvas)
+        gameBoard = printGameBoard(viewCanvas)
     
     contextForGameBoard = GameBoardContext(root)
     contextForGameBoard.config(bg='#f2d2a9')
 
-    b=Button(contextForGameBoard, text='End Game',command=endGame)
-    b.place(x=950, y=600, anchor=E)
-    b.config(bg='#78a8bc', fg ='white')
+    endGameButton=Button(contextForGameBoard, text='End Game',command=endGame)
+    endGameButton.place(x=950, y=600, anchor=E)
+    endGameButton.config(bg='#78a8bc', fg ='white')
 
-    b=Button(contextForGameBoard, text='Start New Game', command=startGame)
-    b.place(x=850, y=600, anchor=E)
-    b.config(bg='#78a8bc', fg='white')
+    startNewGameButton=Button(contextForGameBoard, text='Start New Game', command=startGame)
+    startNewGameButton.place(x=850, y=600, anchor=E)
+    startNewGameButton.config(bg='#78a8bc', fg='white')
 
-    b=Button(contextForGameBoard, text='Splash Screen')
-    splashScreenPhoto=PhotoImage(file='colorful_question_mark_image.png')
-    b.config(image=splashScreenPhoto, width='575', height='500')
-    b.place(x=100, y=115, anchor=NW)
+    clueLessSplashScreenButton=Button(contextForGameBoard, text='Splash Screen')
+    splashScreenPhoto=PhotoImage(file='clueless-splash-screen-image.png')
+    clueLessSplashScreenButton.config(image=splashScreenPhoto, width='575', height='500')
+    clueLessSplashScreenButton.place(x=100, y=115, anchor=NW)
 
     # temp testing to show Miss Scarlet in the hallway between the Hall and Lounge
     missScarlet=Button(root, text='miss scarlet')
