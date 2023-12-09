@@ -82,7 +82,7 @@ if __name__ == '__main__':
         print("Sending game board to window")
         #view.update_idletasks()
 
-    def gameStart():
+    def startGame():
         global coordinate
         print("Clue-Less Game Started!")
         contextForGameBoard.pack_forget()
@@ -282,7 +282,7 @@ if __name__ == '__main__':
     b.place(x=950, y=600, anchor=E)
     b.config(bg='#78a8bc', fg ='white')
 
-    b=Button(contextForGameBoard, text='Start New Game', command=gameStart)
+    b=Button(contextForGameBoard, text='Start New Game', command=startGame)
     b.place(x=850, y=600, anchor=E)
     b.config(bg='#78a8bc', fg='white')
 
@@ -293,7 +293,7 @@ if __name__ == '__main__':
 
     # temp testing to show Miss Scarlet in the hallway between the Hall and Lounge
     missScarlet=Button(root, text='mrs. scarlet')
-    missScarletPhoto=PhotoImage(file='miss-scarlet-with-name-next.png')
+    missScarletPhoto=PhotoImage(file='mrs-scarlet-with-name.png')
     missScarlet.config(image=missScarletPhoto, width='70', height='70')
     missScarlet.place_forget()
 

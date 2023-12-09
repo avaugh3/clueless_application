@@ -5,12 +5,12 @@ class Hallway:
         self.occupiedBy = occupiedBy
    
    def moveIntoHallway(self, Character):
-      if self.occupied
+      if self.occupied:
          print('Sorry! This hallway is already occupied')
-      else
+      else:
          self.occupied = True
          self.occupiedBy = Character
 
-   def moveOutOfHallway():
+   def moveOutOfHallway(self):
       self.occupied = False
       self.occupiedBy = ''
