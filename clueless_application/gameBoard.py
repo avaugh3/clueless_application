@@ -68,7 +68,7 @@ if __name__ == '__main__':
         # if uncommented, can see how how it'd look for 1 character
         # to reside in one cell (e.g., hallway between Hall and Lounge)
         #missScarlet.place(x=610, y=135, anchor=NW) 
-        
+
         missScarlet.place(x=610, y=25, anchor=NW)
         professorPlum.place(x=20, y=240, anchor=NW)
         mrsPeacock.place(x=20, y=435, anchor=NW)
@@ -82,12 +82,14 @@ if __name__ == '__main__':
         # professorPlum.place(x=122, y=340, anchor=NW)
         # mrsPeacock.place(x=195, y=340, anchor=NW)
 
-    # would need to get cell widths and heights
+    # meeting discussion - would want to get cell widths and heights
+    # for the cells to determine range of x and y values that would fall 
+    # under certain cells which represent particular rooms, hallways, or null spaces
 
     # Future - tentative
-    # param1: gameBoard to update
-    # param2: the character to update the gameBoard with 
-    # param3: the character's newLocation
+    # param1: the character (as a button) to update the gameBoard's location with  
+    # param2: the character's current coordinate (i.e., current location)
+    # param3: the character's new coordinate (i.e., new/desired location)
     def updateGameBoard(characterButton, currentCoordinate, newCoordinate):
         print("Updating gameboard...")
         #view.update_idletasks()
@@ -99,7 +101,7 @@ if __name__ == '__main__':
 
         # -- Testing purposes --
         # if uncommented, a Character instantiation for Miss Scarlet would occur 
-        #  missScarletChar = Character('Mrs. Scarlet')
+        #  missScarletChar = Character('Miss  Scarlet')
 
         # Rooms created (9)
         studyRoom = Room('Study', {0,0}, False, 'N/A')
