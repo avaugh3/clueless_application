@@ -46,18 +46,11 @@ if __name__ == '__main__':
     keyHeight = root.winfo_screenheight()
 
     def getGameBoard():
-      #create context for the game board grid
+      # create context for the game board grid
       val = Canvas(root, width=keyWidth, height=keyHeight, bg='#f2d2a9')
       return val
 
     viewCanvas = getGameBoard()
-
-    # Future: should also make it known which secret passage - based on param2, should be able to get room's coordinates
-    # param1: characterName (i.e. room of starting pos)
-    # param2: roomNameOfSecretPassageway or a roomObj (can likely pass this in, will know the name based on the 
-    # secretPassageway button)
-    def takeSecretPassageway():
-        print("take a secret passageway")
 
     def endGame():
         def quitGame():
@@ -69,26 +62,76 @@ if __name__ == '__main__':
         print("Sending game board to window")
 
     # To start the game, display each of the characters
+    # ex. to see how 1 character would appear inside of the gameboard, uncomment line 
     def displayCharacters():
-        missScarlet.place(x=610, y=135, anchor=NW)
+        # -- Testing purposes --
+        # if uncommented, can see how how it'd look for 1 character
+        # to reside in one cell (e.g., hallway between Hall and Lounge)
+        #missScarlet.place(x=610, y=135, anchor=NW) 
+        
+        missScarlet.place(x=610, y=25, anchor=NW)
         professorPlum.place(x=20, y=240, anchor=NW)
         mrsPeacock.place(x=20, y=435, anchor=NW)
         mrGreen.place(x=340, y=720, anchor=S)
         mrsWhite.place(x=640, y=720, anchor=S)
-        colonelMustard.place(x =975, y=240, anchor=NE)
+        colonelMustard.place(x=975, y=240, anchor=NE)
+
+        # -- Testing purposes --
+        # if uncommented, can quickly see how it'd look for >1 character
+        # to reside in one cell (e.g., same room)
+        # professorPlum.place(x=122, y=340, anchor=NW)
+        # mrsPeacock.place(x=195, y=340, anchor=NW)
+
+    # would need to get cell widths and heights
 
     # Future - tentative
     # param1: gameBoard to update
     # param2: the character to update the gameBoard with 
     # param3: the character's newLocation
-    def updateGameBoard(view, characterObj, newLocation):
-        print("Sending game board to window")
+    def updateGameBoard(characterButton, currentCoordinate, newCoordinate):
+        print("Updating gameboard...")
         #view.update_idletasks()
 
     def startGame():
         global gameBoard
         print("Clue-Less Game Started!")
         contextForGameBoard.pack_forget()
+
+        # -- Testing purposes --
+        # if uncommented, a Character instantiation for Miss Scarlet would occur 
+        #  missScarletChar = Character('Mrs. Scarlet')
+
+        # Rooms created (9)
+        studyRoom = Room('Study', {0,0}, False, 'N/A')
+        hall = Room('Hall', {0,2}, False, 'N/A')
+        lounge = Room('Lounge', {0,4}, False, 'N/A')
+        library = Room('Library', {2,0}, False, 'N/A')
+        billiardRoom = Room('Billiard Room', {2,2}, False, 'N/A')
+        diningRoom = Room('Dining Room', {2,4}, False, 'N/A')
+        conservatory = Room('Conservatory', {4,0}, False, 'N/A')
+        ballroom = Room('Ballroom', {4,2}, False, 'N/A')
+        kitchen = Room('Kitchen', {4,4}, False, 'N/A')
+
+        # Hallways created (12)
+        studyHallHallway = Hallway({0,1}, False, 'N/A')
+        hallLoungeHallway = Hallway({0,3}, False, '')
+        studyLibraryHallway = Hallway({1,0}, False, 'N/A')
+        hallBilliardRoomHallway = Hallway({1,2}, False, 'N/A')
+        loungeDiningRoomHallway = Hallway({1,4}, False, 'N/A')
+        libraryBilliardRoomHallway = Hallway({2,1}, False, 'N/A')
+        billiardRoomDiningRoomHallway = Hallway({2,3}, False, 'N/A')
+        libraryConservatoryHallway = Hallway({3,0}, False, 'N/A')
+        billiardBallroomHallway = Hallway({3,2}, False, 'N/A')
+        diningRoomKitchenHallway = Hallway({3,4}, False, 'N/A')
+        conservatoryBallroomHallway = Hallway({4,1}, False, 'N/A')
+        ballroomKitchenHallway = Hallway({4,3}, False, 'N/A')
+
+        # -- Testing purposes --
+        # if uncommented and Miss Scarlet moved to the hallway between the Hall and Lounge
+        #   hallLoungeHallway.isOccupied would be updated to True 
+        #   hallLoungeHallway.occupiedBy would be updated to the character's name (Miss Scarlet in this case)
+        # hallLoungeHallway.isOccupied = True
+        # hallLoungeHallway.occupiedBy = missScarletChar.getName()
 
         # set up the view of the game board
         def printGameBoard(view):
@@ -115,7 +158,7 @@ if __name__ == '__main__':
                         (row + 1) * gridHeight,
                         fill = 'medium seagreen')
 
-                        view.create_text(75, 60, text='Study', font=("Courier bold", 16), fill='black')
+                        view.create_text(75, 20, text='Study', font=("Courier bold", 12), fill='black')
 
                         view.itemconfig(rect, tags=(str(rowNumber), str(columnNumber)))
                         gameBoard[(row,col)]=rect
@@ -128,7 +171,7 @@ if __name__ == '__main__':
                         (row + 1) * gridHeight,
                         fill = 'medium seagreen')
 
-                        view.create_text(380, 65, text='Hall', font=("Courier bold", 16), fill='black')
+                        view.create_text(380, 20, text='Hall', font=("Courier bold", 12), fill='black')
                         view.itemconfig(rect, tags=(str(rowNumber), str(columnNumber)))
                         gameBoard[(row,col)]=rect
 
@@ -140,7 +183,7 @@ if __name__ == '__main__':
                         (row + 1) * gridHeight,
                         fill = 'medium seagreen')
 
-                        view.create_text(685, 65, text='Lounge', font=("Courier bold", 16), fill='black')
+                        view.create_text(685, 20, text='Lounge', font=("Courier bold", 12), fill='black')
                         view.itemconfig(rect, tags=(str(rowNumber), str(columnNumber)))
                         gameBoard[(row,col)]=rect
 
@@ -152,7 +195,7 @@ if __name__ == '__main__':
                         (row + 1) * gridHeight,
                         fill = 'medium seagreen')
 
-                        view.create_text(75, 255, text='Library', font=("Courier bold", 16), fill='black')
+                        view.create_text(75, 208, text='Library', font=("Courier bold", 12), fill='black')
                         view.itemconfig(rect, tags=(str(rowNumber), str(columnNumber)))
                         gameBoard[(row,col)]=rect
 
@@ -164,7 +207,7 @@ if __name__ == '__main__':
                         (row + 1) * gridHeight,
                         fill = 'medium seagreen')
 
-                        view.create_text(380, 255, text='Billiard Room', font=("Courier bold", 16), fill='black')
+                        view.create_text(380, 208, text='Billiard Room', font=("Courier bold", 12), fill='black')
                         view.itemconfig(rect, tags=(str(rowNumber), str(columnNumber)))
                         gameBoard[(row,col)]=rect
 
@@ -176,7 +219,7 @@ if __name__ == '__main__':
                         (row + 1) * gridHeight,
                         fill = 'medium seagreen')
 
-                        view.create_text(685, 255, text='Dining Room', font=("Courier bold", 16), fill='black')
+                        view.create_text(685, 208, text='Dining Room', font=("Courier bold", 12), fill='black')
                         view.itemconfig(rect, tags=(str(rowNumber), str(columnNumber)))
                         gameBoard[(row,col)]=rect
 
@@ -188,7 +231,7 @@ if __name__ == '__main__':
                         (row + 1) * gridHeight,
                         fill = 'medium seagreen')
 
-                        view.create_text(75, 450, text='Conservatory', font=("Courier bold", 16), fill='black')
+                        view.create_text(75, 409, text='Conservatory', font=("Courier bold", 12), fill='black')
                         view.itemconfig(rect, tags=(str(rowNumber), str(columnNumber)))
                         gameBoard[(row,col)]=rect
 
@@ -200,7 +243,7 @@ if __name__ == '__main__':
                         (row + 1) * gridHeight,
                         fill = 'medium seagreen')
 
-                        view.create_text(380, 450, text='Ballroom', font=("Courier bold", 16), fill='black')
+                        view.create_text(380, 409, text='Ballroom', font=("Courier bold", 12), fill='black')
                         view.itemconfig(rect, tags=(str(rowNumber), str(columnNumber)))
                         gameBoard[(row,col)]=rect
 
@@ -212,7 +255,7 @@ if __name__ == '__main__':
                         (row + 1) * gridHeight,
                         fill = 'medium seagreen')
 
-                        view.create_text(685, 450, text='Kitchen', font=("Courier bold", 16), fill='black')
+                        view.create_text(685, 409, text='Kitchen', font=("Courier bold", 12), fill='black')
                         view.itemconfig(rect, tags=(str(rowNumber), str(columnNumber)))
                         gameBoard[(row,col)]=rect
 
@@ -225,7 +268,7 @@ if __name__ == '__main__':
                             (row + 1) * gridHeight,
                             fill = 'LightSalmon3')
 
-                            view.create_text(685, 545, font=("Courier bold", 16), fill='black')
+                            view.create_text(685, 545, font=("Courier bold", 12), fill='black')
                             view.itemconfig(rect, tags=(str(rowNumber), str(columnNumber)))
                             gameBoard[(row,col)]=rect
                     else: 
@@ -238,8 +281,6 @@ if __name__ == '__main__':
 
                         view.itemconfig(rect, tags=(str(rowNumber), str(columnNumber)))
                         gameBoard[(row,col)]=rect
-            print("gameBoard")
-            print(gameBoard)
             return gameBoard
         
         viewCanvas.pack(side=TOP, fill=BOTH, padx=120, pady=120)
@@ -251,16 +292,16 @@ if __name__ == '__main__':
         exit_button = Button(root, text="Exit Game", bg="red", fg="white", command=endGame) 
         exit_button.place(x=894, y=134) 
 
-        secret_passageway_study_button = Button(root, text="S", bg="DarkOrchid3", fg="white", command=takeSecretPassageway) 
+        secret_passageway_study_button = Button(root, text="S", bg="DarkOrchid3", fg="white") 
         secret_passageway_study_button.place(x=252, y=190) 
 
-        secret_passageway_lounge_button = Button(root, text="S", bg="DarkOrchid3", fg="white", command=takeSecretPassageway) 
+        secret_passageway_lounge_button = Button(root, text="S", bg="DarkOrchid3", fg="white") 
         secret_passageway_lounge_button.place(x=730, y=190)
 
-        secret_passageway_conservatory_button = Button(root, text="S", bg="DarkOrchid3", fg="white", command=takeSecretPassageway) 
+        secret_passageway_conservatory_button = Button(root, text="S", bg="DarkOrchid3", fg="white") 
         secret_passageway_conservatory_button.place(x=252, y=522) 
 
-        secret_passageway_kitchen_button = Button(root, text="S", bg="DarkOrchid3", fg="white", command=takeSecretPassageway) 
+        secret_passageway_kitchen_button = Button(root, text="S", bg="DarkOrchid3", fg="white") 
         secret_passageway_kitchen_button.place(x=730, y=522) 
 
         root.update_idletasks()
