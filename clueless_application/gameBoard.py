@@ -9,7 +9,7 @@ from Inventory.room import Room
 
 #### Steps to Display the Clue-Less Game Board (stand-alone)  ####
 # 1. Open a terminal window
-# 2. Navigate to the gameboard directory 
+# 2. Navigate to the clueless_application directory
 # 3. Run the gameBoard.py file
 #    python3 gameBoard.py
 
