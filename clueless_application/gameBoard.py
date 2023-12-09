@@ -14,7 +14,7 @@ from Inventory.room import Room
 #    python3 gameBoard.py
 
 # Set up foundational context frame in which the game board grid sits 
-class displayContextForGameBoard(Frame):
+class GameBoardContext(Frame):
     def __init__(self, master, width=0.65, height=0.48):
         Frame.__init__(self, master)
         
@@ -242,7 +242,6 @@ if __name__ == '__main__':
         
         viewCanvas.pack(side=TOP, fill=BOTH, padx=120, pady=120)
         print(viewCanvas.gettags(CURRENT))
-        print(type(viewCanvas.gettags(CURRENT)))
         viewCanvas.itemconfig(CURRENT, fill="LightSalmon3")
 
         displayCharacters()
@@ -278,7 +277,7 @@ if __name__ == '__main__':
         coordinate = printGameBoard(viewCanvas)
         #displayCoordinateForCellClicked(0, 0, viewCanvas)
     
-    contextForGameBoard = displayContextForGameBoard(root)
+    contextForGameBoard = GameBoardContext(root)
     contextForGameBoard.config(bg='#f2d2a9')
 
     b=Button(contextForGameBoard, text='End Game',command=endGame)
