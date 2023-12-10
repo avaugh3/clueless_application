@@ -70,7 +70,7 @@ if __name__ == '__main__':
         # -- Testing purposes --
         # if uncommented, can see how how it'd look for 1 character
         # to reside in one cell (e.g., hallway between Hall and Lounge)
-        #missScarlet.place(x=610, y=135, anchor=NW) 
+        # missScarlet.place(x=610, y=135, anchor=NW) 
 
         missScarlet.place(x=610, y=25, anchor=NW)
         professorPlum.place(x=20, y=240, anchor=NW)
@@ -130,6 +130,8 @@ if __name__ == '__main__':
         diningRoomKitchenHallway = Hallway({3,4}, False, 'N/A')
         conservatoryBallroomHallway = Hallway({4,1}, False, 'N/A')
         ballroomKitchenHallway = Hallway({4,3}, False, 'N/A')
+
+        print(studyHallHallway.getLocation())
 
         # -- Testing purposes --
         # if uncommented and Miss Scarlet moved to the hallway between the Hall and Lounge
