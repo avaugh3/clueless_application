@@ -26,6 +26,7 @@ class CluelessServer:
         self.playersReady = 0
         self.currentSuggestion = ["dagger", "study", "rope"]
         self.occupancyMatrix = [[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]
+        #self.roomLocations = OrderedDict([([0,0],"Study"),([2,0],"Hall"),([4,0],"Lounge"),([0,2],"Library"),([2,2],"Billiard Room"),([4,2],"Dining Room"),([0,4],"Conservatory"),([2,4],"Ballroom"),([4,4],"Kitchen")])
         self.characterLocations = OrderedDict()
 
     def initializeCharacter(self, client, message):
@@ -38,13 +39,20 @@ class CluelessServer:
         print(self.occupancyMatrix)
         print(self.characterLocations)
 
+        contents = {}
+        contents["info"] = f"New Character {characterName} joined game!"
+        contents["locations"] = self.characterLocations
+        broadcastMessage = Message("info", "Server", contents)
+
+        self.broadcastMessage(self.clients, broadcastMessage)
+
     def validateMove(self, client, message):
         print("Beginning Move Validation")
         direction = message.contents['direction']
         currentLocation = message.contents['currentLocation']
         characterName = message.originalCharacterName
         newLocation = currentLocation.copy()
-
+        
         if (direction == "left" or direction == "right" or direction == "up" or direction == "down"):
             if (direction == "left"):
                 newLocation[0] = currentLocation[0] - 1
@@ -59,6 +67,7 @@ class CluelessServer:
                 if (newLocation[0] % 2 != 0 and newLocation[1] % 2 == 0 and self.occupancyMatrix[newLocation[0]][newLocation[1]] > 0) or (newLocation[0] % 2 == 0 and newLocation[1] % 2 != 0 and self.occupancyMatrix[newLocation[0]][newLocation[1]] > 0):
                     contents = {}
                     contents["info"] = f"Message From Server: Invalid move, hallway is occupied!"
+                    contents["locations"] = self.characterLocations
                     updateMessage = Message("info", "Server", contents)
     
                     self.sendMessageToSpecificClient(client, updateMessage)
@@ -72,6 +81,7 @@ class CluelessServer:
                     contents = {}
                     info = f"Message From Server: Move Validated, New Location is {newLocation}"
                     contents["newLocation"] = newLocation
+                    contents["locations"] = self.characterLocations
                     contents["info"] = info
                 
                     updateMessage = Message("updateLocation", "Server", contents)
@@ -81,12 +91,15 @@ class CluelessServer:
                     print(f"Move Validated: {message.originalCharacterName} moved from {currentLocation} to {newLocation}")
 
                     contents["info"] = f"Move Validated: {message.originalCharacterName} moved from {currentLocation} to {newLocation}"
+                    contents["locations"] = self.characterLocations
                     broadcastMessage = Message("info", "Server", contents)
 
                     self.broadcastMessage(self.clients, broadcastMessage)
+
             else:
                 contents = {}
                 contents["info"] = f"Message From Server: Invalid move, move is out of bounds of game board!"
+                contents["locations"] = self.characterLocations
                 updateMessage = Message("info", "Server", contents)
     
                 self.sendMessageToSpecificClient(client, updateMessage)
@@ -120,6 +133,7 @@ class CluelessServer:
                 info = f"Message From Server: Move Validated, New Location is {newLocation}"
                 contents["newLocation"] = newLocation
                 contents["info"] = info
+                contents["locations"] = self.characterLocations
             
                 updateMessage = Message("updateLocation", "Server", contents)
     
@@ -128,12 +142,15 @@ class CluelessServer:
                 print(f"Move Validated: {message.originalCharacterName} moved from {currentLocation} to {newLocation}")
 
                 contents["info"] = f"Move Validated: {message.originalCharacterName} moved from {currentLocation} to {newLocation}"
+                contents["locations"] = self.characterLocations
                 broadcastMessage = Message("info", "Server", contents)
 
                 self.broadcastMessage(self.clients, broadcastMessage)
+
             else:
                 contents = {}
                 contents["info"] = f"Message From Server: Invalid move, your current room does not have a secret passage!"
+                contents["locations"] = self.characterLocations
                 updateMessage = Message("info", "Server", contents)
     
                 self.sendMessageToSpecificClient(client, updateMessage)
@@ -142,6 +159,7 @@ class CluelessServer:
         else:
             contents = {}
             contents["info"] = f"Message From Server: Invalid move direction \"{direction}\""
+            contents["locations"] = self.characterLocations
             updateMessage = Message("info", "Server", contents)
     
             self.sendMessageToSpecificClient(client, updateMessage)

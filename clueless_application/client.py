@@ -7,7 +7,8 @@ import random
 from messaging.message import Message
 from Inventory.character import Character
 from Inventory.inventory import Inventory
-
+from collections import OrderedDict
+from random import choice
 
 class CluelessClient:
     def __init__(self, host, port):
@@ -17,7 +18,7 @@ class CluelessClient:
         self.character = Character()
         self.inventory = Inventory()
         self.playerName = None
-        self.boardLocation = [random.randint(0, 4), random.randint(0, 4)]
+        #self.boardLocation = [random.randint(0, 4), random.randint(0, 4)]
         self.characterInventory = []
         self.roomInventory = []
         self.weaponInventory = []
@@ -25,7 +26,18 @@ class CluelessClient:
         self.ready = True
         self.gameStarted = False
         self.availableCharacters = ['missscarlet', 'colonelmustard', 'missuswhite', 'mistergreen', 'missuspeacock', 'professorplum']
-        
+        self.roomLocations = OrderedDict([
+            ((0, 0), "Study"),
+            ((2, 0), "Hall"),
+            ((4, 0), "Lounge"),
+            ((0, 2), "Library"),
+            ((2, 2), "Billiard Room"),
+            ((4, 2), "Dining Room"),
+            ((0, 4), "Conservatory"),
+            ((2, 4), "Ballroom"),
+            ((4, 4), "Kitchen")
+        ])
+        self.boardLocation = list(choice(list(self.roomLocations.keys())))
 
     def setBoardLocation(self,location):
         self.boardLocation = location

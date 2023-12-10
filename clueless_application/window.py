@@ -8,6 +8,7 @@ from Inventory.character import Character
 from Inventory.inventory import Inventory
 from infoBoard import InfoBoard
 from collections import OrderedDict
+import pickle
 
 #following geeks for geeks tutorial 
 #client connection
@@ -18,14 +19,29 @@ def consoleOutput(message):
     outputtext.insert(END, message + '\n')
 
 def checkServer(player):
+    #timeout_seconds = 2  # Adjust the timeout value as needed
+
+    # Assuming player.socket is your socket object
+    #player.socket.settimeout(timeout_seconds)
+    
+    global characterLocations
+    global characterButtons
+    #updateGameBoard(characterButtons)
     while True:
+        updateGameBoard(characterButtons)
         try:
             data = player.socket.recv(2048)
             if data:
                 player.processMessage(data, outputtext, END)
                 inventoryList = client.inventory.getItems()
+
+                loaded_msg = pickle.loads(data)
+                characterLocations = loaded_msg.contents['locations']
+                updateGameBoard(characterButtons)
+                
         except:
             pass
+            #updateGameBoard(characterButtons)
     
 def moveMessage():
     contents = {}
@@ -37,19 +53,22 @@ def moveMessage():
     client.send_message(move_message)
     
 def suggesstionMessage():
-    contents = {}
-    suggestion_suspect = inputValSuggesstionCharacter.get().title()
-    contents["suspect"] = suggestion_suspect
+    if (tuple(client.boardLocation) in client.roomLocations.keys()):
+        contents = {}
+        suggestion_suspect = inputValSuggesstionCharacter.get().title()
+        contents["suspect"] = suggestion_suspect
 
-    suggestion_weapon = inputValSuggesstionWeapon.get().lower()
-    contents["weapon"] = suggestion_weapon 
+        suggestion_weapon = inputValSuggesstionWeapon.get().lower()
+        contents["weapon"] = suggestion_weapon 
 
-    suggestion = f"I suggest the crime was committed in {client.boardLocation} by " + contents["suspect"] + " with the " + contents["weapon"]
-    contents["suggestionMessageText"] = suggestion 
-    consoleOutput(suggestion)
-    suggestion_message = Message("suggestion", original_character_name, contents)
-    #suggestion_message.printMessage()
-    client.send_message(suggestion_message)
+        suggestion = f"I suggest the crime was committed in the {client.roomLocations[tuple(client.boardLocation)]} by " + contents["suspect"] + " with the " + contents["weapon"]
+        contents["suggestionMessageText"] = suggestion 
+        consoleOutput(suggestion)
+        suggestion_message = Message("suggestion", original_character_name, contents)
+        #suggestion_message.printMessage()
+        client.send_message(suggestion_message)
+    else:
+        consoleOutput("You cannot make a suggestion. You are not currently in a room.")
 
 def disproveMessage():
     contents = {}
@@ -202,27 +221,36 @@ def showGameBoard():
 
     return characterButtons
 
-def updateGameBoard(characterButtons, characterLocations=None):
+def updateGameBoard(characterButtons):
+    global characterLocations
 
+    #while True:
     cell_width = 120
     cell_height = 60
     outer_padding = 50
-    if characterLocations != None:
-        for character in characterLocations.keys():
 
-            button_x = outer_padding+15+(characterLocations[character][0]*cell_width)
-            button_y = outer_padding+35+(characterLocations[character][1]*cell_height)
+    for character in characterLocations.keys():
 
-            button = characterButtons.get(character.lower())
-            if button:
-                # Toggle visibility
-                if button.winfo_ismapped():
-                    button.pack_forget()
-                else:
-                    button.pack()
+        button_x = outer_padding+15+(characterLocations[character][0]*cell_width)
+        button_y = outer_padding+35+(characterLocations[character][1]*cell_height)
 
-                # Move to a new location using place
-                button.place(x=button_x, y=button_y)
+        button = characterButtons.get(character.lower())
+        if button:
+            # Toggle visibility
+            if button.winfo_ismapped():
+                button.pack_forget()
+            else:
+                button.pack()
+
+            # Move to a new location using place
+            button.place(x=button_x, y=button_y)
+
+def updateBoard():
+    global characterButtons
+
+    while True:
+        print("update board")
+        updateGameBoard(characterButtons)
 
 if __name__ == "__main__":
     INPUT_TIMEOUT = 1 #seconds
@@ -264,7 +292,7 @@ if __name__ == "__main__":
     init_message = Message("character_init", original_character_name, contents)
     
     client.send_message(init_message)
-    
+
     client.ready = True
     initial_message = 'ready'
     #Check for server message each loop iteration
@@ -395,19 +423,17 @@ if __name__ == "__main__":
     UserInputAccusationWeapon = OptionMenu(root, accusationInputWeapon, *weaponItems).grid(column=2, row=20, columnspan=1)
     UserInputAccusationRoom = OptionMenu(root, accusationInputRoom, *RoomItems).grid(column=3, row=20, columnspan=1)
     accusationButton = Button(root, text="Make Accusation", command=accusationMessage).grid(column=4, row=20, columnspan=5)
-    
+
+
+    #Game Board
+    characterLocations = OrderedDict()
+    characterLocations[client.character.name] = client.boardLocation
+
+    characterButtons = showGameBoard()
+    updateGameBoard(characterButtons)
+
     #Start thread to listen for messages from server
     data_thread = threading.Thread(target=checkServer, args=(client,))
     data_thread.start()
-
-    #Game Board
-    #characterLocations = OrderedDict()
-    #characterLocations["missscarlet"] = [0,1]
-    #characterLocations["colonelmustard"] = [4,3]
-    #characterLocations["professorplum"] = [0,1]
-
-    characterButtons = showGameBoard()
-
-    #updateGameBoard(characterButtons, characterLocations)
 
     root.mainloop()
