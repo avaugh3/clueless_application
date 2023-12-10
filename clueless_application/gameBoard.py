@@ -70,7 +70,7 @@ if __name__ == '__main__':
         # -- Testing purposes --
         # if uncommented, can see how how it'd look for 1 character
         # to reside in one cell (e.g., hallway between Hall and Lounge)
-        # missScarlet.place(x=610, y=135, anchor=NW) 
+        # missScarlet.place(x=665, y=140, anchor=NW) 
 
         missScarlet.place(x=665, y=25, anchor=NW)
         professorPlum.place(x=20, y=262, anchor=NW)
@@ -86,8 +86,8 @@ if __name__ == '__main__':
         # -- Testing purposes --
         # if uncommented, can quickly see how it'd look for >1 character
         # to reside in one cell (e.g., same room)
-        # professorPlum.place(x=122, y=340, anchor=NW)
-        # mrsPeacock.place(x=195, y=340, anchor=NW)
+        # professorPlum.place(x=123, y=153, anchor=NW)
+        # mrsPeacock.place(x=190, y=153, anchor=NW)
 
     # Future - tentative
     # param1: the character (as a button) to update the gameBoard's location with  
