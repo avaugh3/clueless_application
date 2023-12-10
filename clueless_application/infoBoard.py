@@ -1,58 +1,59 @@
-from client import CluelessClient
 import tkinter as tk
 from tkinter import *
-import datetime
 import threading
-from messaging.message import Message
-from Inventory.character import Character
-from Inventory.inventory import Inventory
-#from window import *
 
-class InfoBoard(tk.Frame):
-    def consoleOutput(self,message):
-        self.outputtext.insert(END, message + '\n')
+class InfoBoard(Frame):
+    def __init__(self, master=None, client=None):
+        super().__init__(master)
+        self.master = master
+        self.client = client
+        self.pack()
+        self.create_widgets()
+    
+    def consoleOutput(self,message, outputtext):
+        outputtext.insert(END, message + '\n')
 
-    def checkServer(self,player):
+    def checkServer(self,player, outputtext):
         while True:
             try:
                 data = player.socket.recv(2048)
                 if data:
-                    player.processMessage(data, self.outputtext, END)
+                    player.processMessage(data, outputtext, END)
                     inventoryList = self.client.inventory.getItems()
             except:
                 pass
         
-    def moveMessage(self):
+    def moveMessage(self, inputValMove, outputtext):
         contents = {}
-        contents["direction"] = self.inputValMove.get()
+        contents["direction"] = inputValMove.get()
         contents["currentLocation"] = self.client.boardLocation
-        printLine = f"Player {self.original_character_name} requests move {contents['direction']} from {contents['currentLocation']}"
-        self.consoleOutput(printLine)
-        move_message = Message("move", self.original_character_name, contents)
+        printLine = f"Player {self.client.character.name} requests move {contents['direction']} from {contents['currentLocation']}"
+        self.consoleOutput(printLine, outputtext)
+        move_message = Message("move", self.client.character.name, contents)
         self.client.send_message(move_message)
         
-    def suggesstionMessage(self):
+    def suggesstionMessage(self, inputValSuggesstionCharacter,inputValSuggesstionWeapon, outputtext):
         contents = {}
-        suggestion_suspect = self.inputValSuggesstionCharacter.get().title()
+        suggestion_suspect = inputValSuggesstionCharacter.get().title()
         contents["suspect"] = suggestion_suspect
 
-        suggestion_weapon = self.inputValSuggesstionWeapon.get().lower()
+        suggestion_weapon = inputValSuggesstionWeapon.get().lower()
         contents["weapon"] = suggestion_weapon 
 
         suggestion = f"I suggest the crime was committed in {self.client.boardLocation} by " + contents["suspect"] + " with the " + contents["weapon"]
         contents["suggestionMessageText"] = suggestion 
-        self.consoleOutput(suggestion)
-        suggestion_message = Message("suggestion", self.original_character_name, contents)
+        self.consoleOutput(suggestion, outputtext)
+        suggestion_message = Message("suggestion", self.client.character.name, contents)
         #suggestion_message.printMessage()
         self.client.send_message(suggestion_message)
 
-    def disproveMessage(self):
+    def disproveMessage(self,disproveInput, outputtext):
         contents = {}
         #initial_message.replace(" ", "_").lower()
 
-        is_disprove_suggestion_possible = self.disproveInput.get()
+        is_disprove_suggestion_possible = disproveInput.get()
         is_disprove_suggestion_possible = is_disprove_suggestion_possible.capitalize()
-        if(self.disproveInput.get().capitalize != 'FALSE'):
+        if(disproveInput.get().capitalize != 'FALSE'):
             is_disprove_suggestion_possible = 'TRUE'
         else: 
             is_disprove_suggestion_possible = 'FALSE'
@@ -66,7 +67,7 @@ class InfoBoard(tk.Frame):
         #item_type = input("Which inventory item type do you have? (options: Suspect, Room, Weapon): ")
         #inventory_type_to_disprove_suggestion = inventory_type_to_disprove_suggestion.capitalize()
 
-            disprove_item = self.disproveInput.get()
+            disprove_item = disproveInput.get()
 
             #Just add itemType and item to message contents --------------
             #contents['itemType'] = inventory_type_to_disprove_suggestion
@@ -74,40 +75,41 @@ class InfoBoard(tk.Frame):
                             #-------------------------------------------------------------
 
             if (disprove_item.replace(" ","").lower() in self.client.characterInventory or disprove_item.replace(" ","").lower() in self.client.roomInventory or disprove_item.replace(" ","").lower() in self.client.weaponInventory):
-                disprove_message = Message("disprove", self.original_character_name, contents)
+                disprove_message = Message("disprove", self.client.character.name, contents)
                             #disprove_message.printMessage()
                 self.client.send_message(disprove_message)
             else:
-                self.consoleOutput(f"You do not have item \"{disprove_item}\" in your inventory. Please enter a different item.")
+                self.consoleOutput(f"You do not have item \"{disprove_item}\" in your inventory. Please enter a different item.", outputtext)
 
-    def accusationMessage(self):
+    def accusationMessage(self, accusationInputCharacter, accusationInputRoom, accusationInputWeapon, outputtext):
             contents = {}
-            accusation_suspect = self.accusationInputCharacter.get().title()
+            accusation_suspect = accusationInputCharacter.get().title()
             contents["suspect"] = accusation_suspect
 
-            accusation_room = self.accusationInputRoom.get().title()
+            accusation_room = accusationInputRoom.get().title()
             contents["room"] = accusation_room 
 
-            accusation_weapon = self.accusationInputWeapon.get().replace(" ", "").lower()
+            accusation_weapon = accusationInputWeapon.get().replace(" ", "").lower()
             contents["weapon"] = accusation_weapon 
 
             accusation = "I accuse " + contents["suspect"] + " of committing the crime in the " + contents["room"] + " with the " + contents["weapon"]
             contents["accusationMessageText"] = accusation
-            self.consoleOutput(accusation)
-            accusation_message = Message("accusation", self.original_character_name, contents)
+            self.consoleOutput(accusation, outputtext)
+            accusation_message = Message("accusation", self.client.character.name, contents)
             #accusation_message.printMessage()
             self.client.send_message(accusation_message)
-    #root = tk.Tk()
-    #root.title("Clue-Less Application")
-    #root.geometry("750x750")
 
-    def __init__(self, master=None, client=None, **kwargs):
-        super().__init__(client, master, **kwargs)
-        self.client = client
+    def create_widgets(self):
+        # Your existing code here...
+        # Replace 'self' with 'root' for widgets that should be part of the main window
+
+        # root window (main window)
+        self.master.title("Clue-Less Application")
+        self.master.geometry("750x750")
 
         # set title
-        title = Label(self, text="Clue-Less Info Board")                        
-        title.grid(row=0, column=0, sticky='', columnspan = 5)
+        title = Label(self, text="Clue-Less Info Board")
+        title.grid(row=0, column=0, sticky='', columnspan=5)
         title.config(font=("Courier", 34))
 
         # display character Info
@@ -178,7 +180,7 @@ class InfoBoard(tk.Frame):
         # sets up entry message
         directions = ['up', 'down', 'left', 'right', 'secretpassage']
         UserInput = OptionMenu(self, inputValMove, *directions).grid(column=0, row=17, columnspan=5)
-        movebutton = Button(self, text="Make a Move", command=self.moveMessage).grid(column=4, row=17, columnspan=5)
+        movebutton = Button(self, text="Make a Move", command= lambda: self.moveMessage(inputValMove, outputtext)).grid(column=4, row=17, columnspan=5)
 
         # suggesstion
         inputValSuggesstionCharacter = StringVar()
@@ -187,16 +189,16 @@ class InfoBoard(tk.Frame):
         inputValSuggesstionWeapon.set("weapon option")
         userInputCharacterSuggest = OptionMenu(self, inputValSuggesstionCharacter, *characterItems).grid(column=1, row=18, columnspan=1)
         UserInputSuggestWeapon = OptionMenu(self, inputValSuggesstionWeapon, *weaponItems).grid(column=2, row=18, columnspan=2)
-        suggestButton = Button(self, text="Make a Suggestion", command=self.suggesstionMessage).grid(column=4, row=18, columnspan=5)
-
+        suggestButton = Button(self, text="Make a Suggestion", command= lambda: self.suggesstionMessage(inputValSuggesstionCharacter,inputValSuggesstionWeapon, outputtext)).grid(column=4, row=18, columnspan=5)
+        
         #Disprove Set Up 
         disproveInput = StringVar()
         disproveInput.set("item to disprove")
         inventoryListNoOption = inventoryList
         inventoryListNoOption.append("can't disprove suggesstion")
         UserInputDisprove = OptionMenu(self, disproveInput, *inventoryListNoOption).grid(column=0, row=19, columnspan=5)
-        disproveButton = Button(self, text="Disprove", command=self.disproveMessage).grid(column=4, row=19, columnspan=5)
-
+        disproveButton = Button(self, text="Disprove", command= lambda: self.disproveMessage(disproveInput, outputtext)).grid(column=4, row=19, columnspan=5)
+        
         #Accusation Set Up 
         accusationInputCharacter = StringVar()
         accusationInputCharacter.set("Character choice")
@@ -207,8 +209,8 @@ class InfoBoard(tk.Frame):
         UserInputAccusationCharacter = OptionMenu(self, accusationInputCharacter, *characterItems).grid(column=1, row=20, columnspan=1)
         UserInputAccusationWeapon = OptionMenu(self, accusationInputWeapon, *weaponItems).grid(column=2, row=20, columnspan=1)
         UserInputAccusationRoom = OptionMenu(self, accusationInputRoom, *RoomItems).grid(column=3, row=20, columnspan=1)
-        accusationButton = Button(self, text="Make Accusation", command=self.accusationMessage).grid(column=4, row=20, columnspan=5)
-
+        accusationButton = Button(self, text="Make Accusation", command= lambda: self.accusationMessage(accusationInputCharacter, accusationInputRoom, accusationInputWeapon, outputtext)).grid(column=4, row=20, columnspan=5)
+        
         #Start thread to listen for messages from server
-        data_thread = threading.Thread(target=self.checkServer, args=(client,))
+        data_thread = threading.Thread(target=self.checkServer, args=(self.client,outputtext,))
         data_thread.start()

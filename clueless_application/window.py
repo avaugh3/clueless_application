@@ -7,6 +7,8 @@ from messaging.message import Message
 from Inventory.character import Character
 from Inventory.inventory import Inventory
 from infoBoard import InfoBoard
+from collections import OrderedDict
+
 #following geeks for geeks tutorial 
 #client connection
 #TODO: HOST = input("Enter IP Address of ClueLess Server: ")
@@ -100,6 +102,127 @@ def accusationMessage():
         accusation_message = Message("accusation", original_character_name, contents)
         #accusation_message.printMessage()
         client.send_message(accusation_message)
+
+def showGameBoard():
+    new_window = tk.Toplevel(root)
+    new_window.title("Clue-Less")
+    label = tk.Label(new_window, text="Clue-Less Game Board", font=("Helvetica", 20))
+    label.pack()
+    
+    # Define the size of the grid and outer padding
+    rows, cols = 5, 5
+    cell_width = 120
+    cell_height = 60
+    outer_padding = 50  # Adjust the outer padding as needed
+
+    canvas_width = cols * cell_width + 2 * outer_padding
+    canvas_height = rows * cell_height + 2 * outer_padding
+
+    canvas = tk.Canvas(new_window, width=canvas_width, height=canvas_height)
+    canvas.pack()
+
+    for row in range(rows):
+        for col in range(cols):
+            x1 = col * cell_width + outer_padding
+            y1 = row * cell_height + outer_padding
+            x2 = x1 + cell_width
+            y2 = y1 + cell_height
+
+            # Make the corners and specified cells medium seagreen
+            if (row, col) in [(0, 0), (0, 2), (0, 4), (2, 0), (2, 2), (2, 4), (4, 0), (4, 2), (4,4)]:
+                color = "medium seagreen"
+            # Make specified cells grey
+            elif (row, col) in [(1, 1), (3, 1), (1, 3), (3, 3)]:
+                color = "grey"
+            # All other rectangles LightSalmon3
+            else:
+                color = "LightSalmon3"
+
+            canvas.create_rectangle(x1, y1, x2, y2, fill=color, outline="black")
+    
+    # Add labels to rooms
+    label_text = "Study"
+    label_x = cell_width/2 + outer_padding
+    label_y = cell_height/2 + outer_padding * 1.3
+    canvas.create_text(label_x, label_y, text=label_text, fill="black", font=("Helvetica", 12), anchor="n")
+
+    label_text = "Hall"
+    label_x = 5*cell_width/2 + outer_padding
+    label_y = cell_height/2 + outer_padding * 1.3
+    canvas.create_text(label_x, label_y, text=label_text, fill="black", font=("Helvetica", 12), anchor="n")
+
+    label_text = "Lounge"
+    label_x = 9*cell_width/2 + outer_padding
+    label_y = cell_height/2 + outer_padding * 1.3
+    canvas.create_text(label_x, label_y, text=label_text, fill="black", font=("Helvetica", 12), anchor="n")
+
+    label_text = "Library"
+    label_x = cell_width/2 + outer_padding
+    label_y = 5*cell_height/2 + outer_padding * 1.3
+    canvas.create_text(label_x, label_y, text=label_text, fill="black", font=("Helvetica", 12), anchor="n")
+
+    label_text = "Billiard Room"
+    label_x = 5*cell_width/2 + outer_padding
+    label_y = 5*cell_height/2 + outer_padding * 1.3
+    canvas.create_text(label_x, label_y, text=label_text, fill="black", font=("Helvetica", 12), anchor="n")
+
+    label_text = "Dining Room"
+    label_x = 9*cell_width/2 + outer_padding
+    label_y = 5*cell_height/2 + outer_padding * 1.3
+    canvas.create_text(label_x, label_y, text=label_text, fill="black", font=("Helvetica", 12), anchor="n")
+
+    label_text = "Conservatory"
+    label_x = cell_width/2 + outer_padding
+    label_y = 9*cell_height/2 + outer_padding * 1.3
+    canvas.create_text(label_x, label_y, text=label_text, fill="black", font=("Helvetica", 12), anchor="n")
+
+    label_text = "Ballroom"
+    label_x = 5*cell_width/2 + outer_padding
+    label_y = 9*cell_height/2 + outer_padding * 1.3
+    canvas.create_text(label_x, label_y, text=label_text, fill="black", font=("Helvetica", 12), anchor="n")
+
+    label_text = "Kitchen"
+    label_x = 9*cell_width/2 + outer_padding
+    label_y = 9*cell_height/2 + outer_padding * 1.3
+    canvas.create_text(label_x, label_y, text=label_text, fill="black", font=("Helvetica", 12), anchor="n")
+
+    # Create buttons and store them in a dictionary
+    characterButtons = {
+        "missscarlet": tk.Button(new_window, text="MS", width=4, height=3, font=("Helvetica", 8)),
+        "colonelmustard": tk.Button(new_window, text="CM", width=4, height=3, font=("Helvetica", 8)),
+        "missuswhite": tk.Button(new_window, text="MW", width=4, height=3, font=("Helvetica", 8)),
+        "mistergreen": tk.Button(new_window, text="MG", width=4, height=3, font=("Helvetica", 8)),
+        "missuspeacock": tk.Button(new_window, text="MP", width=4, height=3, font=("Helvetica", 8)),
+        "professorplum": tk.Button(new_window, text="PP", width=4, height=3, font=("Helvetica", 8))
+    }
+
+    # Pack all buttons for demonstration purposes
+    for button in characterButtons.values():
+        button.pack_forget()
+
+    return characterButtons
+
+def updateGameBoard(characterButtons, characterLocations=None):
+
+    cell_width = 120
+    cell_height = 60
+    outer_padding = 50
+    if characterLocations != None:
+        for character in characterLocations.keys():
+
+            button_x = outer_padding+15+(characterLocations[character][0]*cell_width)
+            button_y = outer_padding+35+(characterLocations[character][1]*cell_height)
+
+            button = characterButtons.get(character.lower())
+            if button:
+                # Toggle visibility
+                if button.winfo_ismapped():
+                    button.pack_forget()
+                else:
+                    button.pack()
+
+                # Move to a new location using place
+                button.place(x=button_x, y=button_y)
 
 if __name__ == "__main__":
     INPUT_TIMEOUT = 1 #seconds
@@ -276,5 +399,15 @@ if __name__ == "__main__":
     #Start thread to listen for messages from server
     data_thread = threading.Thread(target=checkServer, args=(client,))
     data_thread.start()
-    
+
+    #Game Board
+    #characterLocations = OrderedDict()
+    #characterLocations["missscarlet"] = [0,1]
+    #characterLocations["colonelmustard"] = [4,3]
+    #characterLocations["professorplum"] = [0,1]
+
+    characterButtons = showGameBoard()
+
+    #updateGameBoard(characterButtons, characterLocations)
+
     root.mainloop()

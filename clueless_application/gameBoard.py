@@ -338,39 +338,39 @@ if __name__ == '__main__':
     startNewGameButton.config(bg='#78a8bc', fg='white')
 
     clueLessSplashScreenButton=Button(contextForGameBoard, text='Splash Screen')
-    splashScreenPhoto=PhotoImage(file='clueless-splash-screen-image.png')
-    clueLessSplashScreenButton.config(image=splashScreenPhoto, width='575', height='500')
+    #splashScreenPhoto=PhotoImage(file='clueless-splash-screen-image.png')
+    clueLessSplashScreenButton.config(width='575', height='500')
     clueLessSplashScreenButton.place(x=100, y=115, anchor=NW)
 
     # temp testing to show Miss Scarlet in the hallway between the Hall and Lounge
     missScarlet=Button(root, text='miss scarlet')
-    missScarletPhoto=PhotoImage(file='miss-scarlet-with-name.png')
-    missScarlet.config(image=missScarletPhoto, width='70', height='70')
+    #missScarletPhoto=PhotoImage(file='miss-scarlet-with-name.png')
+    missScarlet.config(width='70', height='70')
     missScarlet.place_forget()
 
     professorPlum=Button(root, text='professor plum')
-    professorPlumPhoto=PhotoImage(file='professor-plum-with-name.png')
-    professorPlum.config(image=professorPlumPhoto, width='70', height='70')
+    #professorPlumPhoto=PhotoImage(file='professor-plum-with-name.png')
+    professorPlum.config(width='70', height='70')
     professorPlum.place_forget()
 
     mrsPeacock=Button(root, text='mrs. peacock')
-    mrsPeacockPhoto=PhotoImage(file='mrs-peacock-with-name.png')
-    mrsPeacock.config(image=mrsPeacockPhoto, width='70', height='70')
+    #mrsPeacockPhoto=PhotoImage(file='mrs-peacock-with-name.png')
+    mrsPeacock.config(width='70', height='70')
     mrsPeacock.place_forget()
 
     mrGreen=Button(root, text='mr. green')
-    mrGreenPhoto=PhotoImage(file='mr-green-with-name.png')
-    mrGreen.config(image=mrGreenPhoto, width='70', height='70')
+    #mrGreenPhoto=PhotoImage(file='mr-green-with-name.png')
+    mrGreen.config(width='70', height='70')
     mrGreen.place_forget()
 
     mrsWhite=Button(root, text='mrs. white')
-    mrsWhitePhoto=PhotoImage(file='mrs-white-with-name.png')
-    mrsWhite.config(image=mrsWhitePhoto, width='70', height='70')
+    #mrsWhitePhoto=PhotoImage(file='mrs-white-with-name.png')
+    mrsWhite.config(width='70', height='70')
     mrsWhite.place_forget()
 
     colonelMustard=Button(root, text='colonel mustard')
-    colonelMustardPhoto=PhotoImage(file='col-mustard-with-name.png')
-    colonelMustard.config(image=colonelMustardPhoto, width='70', height='70')
+    #colonelMustardPhoto=PhotoImage(file='col-mustard-with-name.png')
+    colonelMustard.config(width='70', height='70')
     colonelMustard.place_forget()
 
     clueLessNameForFrame = Label(root, text='Clue-Less', font=('Arial 20 bold'))
