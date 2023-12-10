@@ -20,6 +20,26 @@ inventoryList = []
 def consoleOutput(message):
     outputtext.insert(END, message + '\n')
 
+def sendReady():
+    client.ready = True
+    initial_message = 'ready'
+    #Check for server message each loop iteration
+    while True:
+        if (not client.ready):
+            initial_message = client.inputWithTimeout("Press 'Ready' to Notify Server You are Ready to Begin: ", INPUT_TIMEOUT, print_prompt)
+            print_prompt = False
+            
+        if (initial_message != None):
+            print_prompt = True
+            contents = {}
+                    
+        if initial_message == 'ready':
+            ready_message = Message("ready", original_character_name, None)
+            client.send_message(ready_message)
+            client.ready = True
+            break
+
+
 def checkServer(player):
     #timeout_seconds = 2  # Adjust the timeout value as needed
 
@@ -317,23 +337,6 @@ if __name__ == "__main__":
     
     client.send_message(init_message)
 
-    client.ready = True
-    initial_message = 'ready'
-    #Check for server message each loop iteration
-    while True:
-        if (not client.ready):
-            initial_message = client.inputWithTimeout("Type 'Ready' to Notify Server You are Ready to Begin: ", INPUT_TIMEOUT, print_prompt)
-            print_prompt = False
-            
-        if (initial_message != None):
-            print_prompt = True
-            contents = {}
-                    
-        if initial_message == 'ready':
-            ready_message = Message("ready", original_character_name, None)
-            client.send_message(ready_message)
-            client.ready = True
-            break
 
     #*****************************************#
     #****************************************#
@@ -355,6 +358,8 @@ if __name__ == "__main__":
     characterdisplay = Label(root, text=characterInformation)
     characterdisplay.grid(row = 1, column=0, sticky='', columnspan = 5)
     characterdisplay.config(font=("Courier", 25))
+
+    readyButton = Button(root, text="Ready To Play", command=sendReady).grid(row=1, column=5, columnspan=1)
 
     #Display Characters inventory
     inventoryList = client.characterInventory + client.weaponInventory + client.roomInventory
