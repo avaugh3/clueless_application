@@ -225,7 +225,7 @@ class CluelessServer:
             # Create and send the message to the current client
             updateMessage = Message("loadInventory", "Server", contents)
             self.sendMessageToSpecificClient(client, updateMessage)
-            
+            self.broadcastMessage(self.clients, "ALL Inventories should be sent out")
             # Update the start index for the next iteration
             rooms_start_index = rooms_end_index
             rooms_remainder -= 1

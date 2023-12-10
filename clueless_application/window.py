@@ -5,11 +5,7 @@ import datetime
 import threading
 from messaging.message import Message
 from Inventory.character import Character
-from Inventory.inventory import Inventory
-#following geeks for geeks tutorial 
-#client connection
-#TODO: HOST = input("Enter IP Address of ClueLess Server: ")
-#TODO: PORT = int(input("Enter Port Number of Clueless Server: "))
+
 
 def consoleOutput(message):
     outputtext.insert(END, message + '\n')
@@ -20,14 +16,12 @@ def checkServer(player):
             data = player.socket.recv(2048)
             if data:
                 player.processMessage(data, outputtext, END)
-                inventoryList = client.inventory.getItems()
+                #inventoryList = player.characterInventory
         except:
             pass
     
 def moveMessage():
     contents = {}
-    #printLine = 'window sending move ' + inputValMove.get()
-    #consoleOutput(printLine)
     contents["direction"] = inputValMove.get()
     contents["currentLocation"] = client.boardLocation
     printLine = f"Player {original_character_name} requests move {contents['direction']} from {contents['currentLocation']}"
@@ -103,6 +97,11 @@ def accusationMessage():
         #accusation_message.printMessage()
         client.send_message(accusation_message)
 
+def loadInventory():
+    consoleOutput(client.characterInventory)
+    inventoryList = client.characterInventory + client.weaponInventory + client.roomInventory
+    consoleOutput(inventoryList)
+    
 if __name__ == "__main__":
     INPUT_TIMEOUT = 1 #seconds
     print_prompt = True
@@ -125,6 +124,7 @@ if __name__ == "__main__":
     original_character_name = original_character_name.title()
     client.character.name = original_character_name
     client.playerName = original_character_name
+    
     
     client.ready = True
     initial_message = 'ready'
@@ -167,20 +167,15 @@ if __name__ == "__main__":
     characterdisplay.config(font=("Courier", 25))
 
     #Display Characters inventory
-    #TODO get the inventory lists function to display right
-    #inventoryList = client.inventory.getItems()
-    inventoryList =['lead pipe', 'revolver', 'weapon2']
+    inventoryList = client.characterInventory + client.weaponInventory + client.roomInventory
+   # consoleOutput(client.characterInventory)
     inventoryLabel = Label(root, text="Your Inventory")
     inventoryLabel.config(font=("Courier", 15))
     inventoryLabel.grid(row = 2, column=0, sticky='', columnspan = 1)
     value = 3
-    if inventoryList != None:
-        for i in inventoryList:
-            Label(root, text = "● "+i).grid(row = value, column=0, pady=2)
-            value = value + 1
-    else: 
-        inventoryList = []
-        Label(root, text = "awaiting inventory").grid(row = 3, column=0, pady=2)
+    for i in inventoryList:
+        Label(root, text = "● "+i).grid(row = value, column=0, pady=2)
+        value = value + 1
 
     #Display Checklist of all possible items
     RoomItems = ['Study', 'Hall','Lounge','Dining Room', 'Kitchen','Ballroom','Conservatory', 'Library', 'Billard Room']
@@ -213,6 +208,15 @@ if __name__ == "__main__":
     outputtext = Text(mainframe, width=80, height=10)
     outputtext.grid(column=1, row=14, columnspan=5)
 
+     #Display Characters inventory
+    inventoryLabel = Label(root, text="Your Inventory")
+    inventoryLabel.config(font=("Courier", 15))
+    inventoryLabel.grid(row = 2, column=0, sticky='', columnspan = 1)
+    value = 3
+    for i in inventoryList:
+        Label(root, text = "● "+i).grid(row = value, column=0, pady=2)
+        value = value + 1
+        
     #Set up user input
     gameInputTitle = Label(root, text="\nInput From Game")
     gameInputTitle.config(font=("Courier", 15))
@@ -258,9 +262,9 @@ if __name__ == "__main__":
     UserInputAccusationRoom = OptionMenu(root, accusationInputRoom, *RoomItems).grid(column=3, row=20, columnspan=1)
     accusationButton = Button(root, text="Make Accusation", command=accusationMessage).grid(column=4, row=20, columnspan=5)
     
+   
     #Start thread to listen for messages from server
     data_thread = threading.Thread(target=checkServer, args=(client,))
     data_thread.start()
-
     root.mainloop()
     
