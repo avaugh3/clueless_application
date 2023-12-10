@@ -139,20 +139,23 @@ if __name__ == '__main__':
         #  missScarletCharacter = Character('Miss  Scarlet')
 
         gameBoard = GameBoard(roomArray, hallwayArray)
+        # get grid alone
         grid = gameBoard.getGameBoardGrid()
-        gameBoard.gameBoardGrid = grid
+        # could also maintain access to grid via the gameBoard instance obj
+        # gameBoard.gameBoardGrid[row][col]
 
         # -- Testing purposes --
         # if uncommented can confirm that for the game board instance's grid, accessing a particular cell 
         # as expected for its position gives the expected name 
         # in this case 0,0 in the game board grid should be a room with the name of Study 
         # Study room key info from 5 x 5 game board grid below
-        # val = gameBoard.gameBoardGrid 
-        # print(val[0][0].getName())
-        # print(val[0][0].getLocation())
-        # print(val[0][0].isOccupied()) 
+        # val = gameBoard.getGameBoardGrid() 
+        # print(gameBoard.gameBoardGrid[0][0].getName())
+        # print(gameBoard.gameBoardGrid[0][4].getName())
+        # print(gameBoard.gameBoardGrid[0][0].getLocation())
+        # print(gameBoard.gameBoardGrid[0][0].isOccupied()) 
         # For line below, should also uncomment testing purposes line in Room's isOccupiedBy method
-        # print('Room ' + (val[0][0].getName() + ' is occupied by ' + val[0][0].isOccupiedBy()))
+        # print('Room ' + (gameBoard.gameBoardGrid[0][0].getName() + ' is occupied by ' + gameBoard.gameBoardGrid[0][0].isOccupiedBy()))
         gameBoard.printGameBoardGrid()
 
         # -- Testing purposes --
