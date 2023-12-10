@@ -44,7 +44,7 @@ class CluelessServer:
         contents["locations"] = self.characterLocations
         broadcastMessage = Message("info", "Server", contents)
 
-        self.broadcastMessage(self.clients, broadcastMessage)
+        #self.broadcastMessage(self.clients, broadcastMessage)
 
     def validateMove(self, client, message):
         print("Beginning Move Validation")
@@ -319,7 +319,7 @@ class CluelessServer:
             # Create and send the message to the current client
             updateMessage = Message("loadInventory", "Server", contents)
             self.sendMessageToSpecificClient(client, updateMessage)
-            
+            #self.broadcastMessage(self.clients, "ALL Inventories should be sent out")
             # Update the start index for the next iteration
             rooms_start_index = rooms_end_index
             rooms_remainder -= 1
@@ -400,8 +400,8 @@ class CluelessServer:
 
             self.broadcastMessage(self.clients, f"New client added to the Clue-Less game {addr}")
 
-            if (len(self.clients) == 1):
-                self.playerTurnNotification(client)
+           # if (len(self.clients) == 1):
+            #    self.playerTurnNotification(client)
 
             thread = threading.Thread(target=self.handle_client, args=(client,))
             thread.start()

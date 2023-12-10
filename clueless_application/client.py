@@ -52,6 +52,7 @@ class CluelessClient:
         self.socket.send(pickled_msg)
 
     def processMessage(self, message, textbox, END):
+        print('processing message ', message)
         loaded_msg = pickle.loads(message)
         textbox.insert(END, loaded_msg.contents["info"] + '\n')
         textbox.see("end")
@@ -69,7 +70,9 @@ class CluelessClient:
             self.weaponInventory = loaded_msg.contents['weapons']
             self.characterInventory = loaded_msg.contents['characters']
             self.gameStarted = True
-
+            #print(self.characterInventory)
+            #print(self.weaponInventory)
+            #print(self.roomInventory)
     def handle_read(self):
         message = self.recv(1024)
         self.log.info('Received message: %s', )
