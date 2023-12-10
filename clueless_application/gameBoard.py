@@ -7,7 +7,10 @@ from Inventory.hallway import Hallway
 from Inventory.room import Room
 # beginning foundation for tkinter game board: stackoverflow
 
-#### Steps to Display the Clue-Less Game Board (stand-alone)  ####
+#### Optional Steps to Display the Clue-Less Game Board (stand-alone)  ####
+# Pre-requsite: would need to comment out references to certain Clue-Less specific imports
+# e.g. (non-exhaustive list ack to account for any future imports) Character|Hallway|Room imports/classes
+# -------------------------------------------------------------------------
 # 1. Open a terminal window
 # 2. Navigate to the clueless_application directory
 # 3. Run the gameBoard.py file
