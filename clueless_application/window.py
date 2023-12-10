@@ -157,7 +157,7 @@ if __name__ == "__main__":
 
     # root window (main window)
     root = tk.Tk()
-    root.title("Clue-Less Application Info Board")
+    root.title("Clue-Less Application")
     root.geometry("750x750")
 
     # set title
