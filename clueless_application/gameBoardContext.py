@@ -140,7 +140,7 @@ if __name__ == '__main__':
 
         gameBoard = GameBoard(roomArray, hallwayArray)
         # get grid alone
-        grid = gameBoard.getGameBoardGrid()
+        gameBoardGrid = gameBoard.getGameBoardGrid()
         # could also maintain access to grid via the gameBoard instance obj
         # gameBoard.gameBoardGrid[row][col]
 

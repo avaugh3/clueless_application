@@ -36,9 +36,9 @@ class GameBoard:
     def printGameBoardGrid(self):
         if self.gameBoardGrid != None:
             for row in self.gameBoardGrid: 
-                for element in row: 
-                    if element != None:
-                        print(element.getLocation(), end=' ') 
+                for cell in row: 
+                    if cell != None:
+                        print(cell.getLocation(), end=' ') 
                         print() 
                     else:
                         print("None, void space")
