@@ -1,4 +1,5 @@
 from client import CluelessClient
+import pickle
 import tkinter as tk
 from tkinter import *
 import datetime
@@ -6,7 +7,7 @@ import threading
 from messaging.message import Message
 from Inventory.character import Character
 
-
+inventoryList = []
 def consoleOutput(message):
     outputtext.insert(END, message + '\n')
 
@@ -17,6 +18,27 @@ def checkServer(player):
             if data:
                 player.processMessage(data, outputtext, END)
                 #inventoryList = player.characterInventory
+                loaded_msg = pickle.loads(data)
+                if (loaded_msg.type == "loadInventory"):
+                    print("Loading Client Inventory within window file")
+                    roomInventory = loaded_msg.contents['rooms']
+                    weaponInventory = loaded_msg.contents['weapons']
+                    characterInventory = loaded_msg.contents['characters']
+                    global inventoryList
+                    inventoryList = roomInventory + weaponInventory + characterInventory
+                    value = 3
+                    for i in roomInventory:
+                        Label(root, text = "● "+i).grid(row = value, column=0, pady=0)
+                        value = value + 1
+                    value = 3
+                    for i in weaponInventory:
+                        Label(root, text = "● "+i).grid(row = value, column=1, pady=0)
+                        value = value + 1
+                    value = 3
+                    for i in characterInventory:
+                        Label(root, text = "● "+i).grid(row = value, column=2, pady=0)
+                        value = value + 1
+    
         except:
             pass
     
@@ -97,10 +119,6 @@ def accusationMessage():
         #accusation_message.printMessage()
         client.send_message(accusation_message)
 
-def loadInventory():
-    consoleOutput(client.characterInventory)
-    inventoryList = client.characterInventory + client.weaponInventory + client.roomInventory
-    consoleOutput(inventoryList)
     
 if __name__ == "__main__":
     INPUT_TIMEOUT = 1 #seconds
@@ -152,7 +170,7 @@ if __name__ == "__main__":
     # root window (main window)
     root = tk.Tk()
     root.title("Clue-Less Application")
-    root.geometry("750x750")
+    root.geometry("800x800")
 
     # set title
     title = Label(root, text="Clue-Less Info Board")                        
@@ -173,9 +191,9 @@ if __name__ == "__main__":
     inventoryLabel.config(font=("Courier", 15))
     inventoryLabel.grid(row = 2, column=0, sticky='', columnspan = 1)
     value = 3
-    for i in inventoryList:
-        Label(root, text = "● "+i).grid(row = value, column=0, pady=2)
-        value = value + 1
+   # for i in inventoryList:
+    #    Label(root, text = "● "+i).grid(row = value, column=0, pady=2)
+     #   value = value + 1
 
     #Display Checklist of all possible items
     RoomItems = ['Study', 'Hall','Lounge','Dining Room', 'Kitchen','Ballroom','Conservatory', 'Library', 'Billard Room']
@@ -183,18 +201,18 @@ if __name__ == "__main__":
     weaponItems = ['Rope', 'Lead Pipe', 'Knife', 'Wrench', 'Candlestick', 'Revolver']
     checklist = Label(root, text="Item Checklists")
     checklist.config(font=("Courier", 15))
-    checklist.grid(row = 2, column=2, sticky='', columnspan = 3)
+    checklist.grid(row = 2, column=3, sticky='', columnspan = 3)
     line = 3
     for x in RoomItems:
-        Checkbutton(root, text=x).grid(row = line, column=2, sticky='W')
-        line = line + 1
-    line = 3
-    for x in characterItems:
         Checkbutton(root, text=x).grid(row = line, column=3, sticky='W')
         line = line + 1
     line = 3
-    for x in weaponItems:
+    for x in characterItems:
         Checkbutton(root, text=x).grid(row = line, column=4, sticky='W')
+        line = line + 1
+    line = 3
+    for x in weaponItems:
+        Checkbutton(root, text=x).grid(row = line, column=5, sticky='W')
         line = line + 1
 
     # Display Broadcast of messagess
@@ -244,10 +262,10 @@ if __name__ == "__main__":
     
     #Disprove Set Up 
     disproveInput = StringVar()
-    disproveInput.set("item to disprove")
-    inventoryListNoOption = inventoryList
-    inventoryListNoOption.append("can't disprove suggesstion")
-    UserInputDisprove = OptionMenu(root, disproveInput, *inventoryListNoOption).grid(column=0, row=19, columnspan=5)
+    #disproveInput.set("item to disprove")
+    #inventoryListNoOption = client.characterInventory + client.roomInventory + client.weaponInventory
+    #inventoryListNoOption.append("can't disprove suggesstion")
+    UserInputDisprove = Entry(root, textvariable=disproveInput).grid(column=0, row=19, columnspan=5)
     disproveButton = Button(root, text="Disprove", command=disproveMessage).grid(column=4, row=19, columnspan=5)
     
     #Accusation Set Up 

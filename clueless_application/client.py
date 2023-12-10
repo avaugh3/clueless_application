@@ -55,7 +55,9 @@ class CluelessClient:
             self.weaponInventory = loaded_msg.contents['weapons']
             self.characterInventory = loaded_msg.contents['characters']
             self.gameStarted = True
-
+            #print(self.characterInventory)
+            #print(self.weaponInventory)
+            #print(self.roomInventory)
     def handle_read(self):
         message = self.recv(1024)
         self.log.info('Received message: %s', )

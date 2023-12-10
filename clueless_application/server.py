@@ -302,8 +302,8 @@ class CluelessServer:
 
             self.broadcastMessage(self.clients, f"New client added to the Clue-Less game {addr}")
 
-            if (len(self.clients) == 1):
-                self.playerTurnNotification(client)
+           # if (len(self.clients) == 1):
+            #    self.playerTurnNotification(client)
 
             thread = threading.Thread(target=self.handle_client, args=(client,))
             thread.start()
