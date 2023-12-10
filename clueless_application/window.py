@@ -225,7 +225,7 @@ if __name__ == "__main__":
     inputValMove.set("chose a direction")
 
     # sets up entry message
-    directions = ['up', 'down', 'left', 'right', 'secret passage']
+    directions = ['up', 'down', 'left', 'right', 'secretpassage']
     UserInput = OptionMenu(root, inputValMove, *directions).grid(column=0, row=17, columnspan=5)
     movebutton = Button(root, text="Make a Move", command=moveMessage).grid(column=4, row=17, columnspan=5)
 

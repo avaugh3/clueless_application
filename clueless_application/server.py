@@ -34,13 +34,13 @@ class CluelessServer:
 
         if (direction == "left" or direction == "right" or direction == "up" or direction == "down"):
             if (direction == "left"):
-                newLocation[1] = currentLocation[1] - 1
-            elif (direction == "right"):
-                newLocation[1] = currentLocation[1] + 1
-            elif (direction == "up"):
                 newLocation[0] = currentLocation[0] - 1
-            else:
+            elif (direction == "right"):
                 newLocation[0] = currentLocation[0] + 1
+            elif (direction == "up"):
+                newLocation[1] = currentLocation[1] - 1
+            else:
+                newLocation[1] = currentLocation[1] + 1
 
             if (newLocation[0] < 5 and newLocation[1] < 5 and newLocation[0]>-1 and newLocation[1]>-1):
                 contents = {}
@@ -65,7 +65,50 @@ class CluelessServer:
     
                 self.sendMessageToSpecificClient(client, updateMessage)
                 print(f"Invalid move, move is out of bounds of game board!")
+        elif (direction == "secretpassage"):
+            validMove = False
+            if (currentLocation[0] == 0 and currentLocation[1] == 0):
+                validMove = True
+                newLocation[0] = 4
+                newLocation[1] = 4
+            elif (currentLocation[0] == 0 and currentLocation[1] == 4):
+                validMove = True
+                newLocation[0] = 4
+                newLocation[1] = 0
+            elif (currentLocation[0] == 4 and currentLocation[1] == 0):
+                validMove = True
+                newLocation[0] = 0
+                newLocation[1] = 4
+            elif (currentLocation[0] == 4 and currentLocation[1] == 4):
+                validMove = True
+                newLocation[0] = 0
+                newLocation[1] = 0
+            
+            if (validMove):
+                contents = {}
+                info = f"Message From Server: Move Validated, New Location is {newLocation}"
+                contents["newLocation"] = newLocation
+                contents["info"] = info
+            
+                updateMessage = Message("updateLocation", "Server", contents)
+    
+                self.sendMessageToSpecificClient(client, updateMessage)
+                
+                print(f"Move Validated: {message.originalCharacterName} moved from {currentLocation} to {newLocation}")
 
+                contents["info"] = f"Move Validated: {message.originalCharacterName} moved from {currentLocation} to {newLocation}"
+                broadcastMessage = Message("info", "Server", contents)
+
+                self.broadcastMessage(self.clients, broadcastMessage)
+            else:
+                contents = {}
+                contents["info"] = f"Message From Server: Invalid move, your current room does not have a secret passage!"
+                updateMessage = Message("info", "Server", contents)
+    
+                self.sendMessageToSpecificClient(client, updateMessage)
+                print(f"Invalid move, your current room does not have a secret passage!")
+            
+                
         else:
             contents = {}
             contents["info"] = f"Message From Server: Invalid move direction \"{direction}\""

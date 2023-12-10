@@ -40,6 +40,8 @@ class CluelessClient:
 
     def processMessage(self, message, textbox, END):
         loaded_msg = pickle.loads(message)
+        textbox.insert(END, loaded_msg.contents["info"] + '\n')
+        textbox.see("end")
 
         if (loaded_msg.type == "updateLocation"):
             print(loaded_msg.contents["info"])
@@ -47,7 +49,6 @@ class CluelessClient:
 
         elif (loaded_msg.type == "info"):
             print(loaded_msg.contents["info"])
-            textbox.insert(END, loaded_msg.contents["info"] + '\n')
 
         elif (loaded_msg.type == "loadInventory"):
             print("Loading Client Inventory")
