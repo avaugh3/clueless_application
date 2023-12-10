@@ -33,12 +33,11 @@ class GameBoardContext(Frame):
         y = (screen_height/2) - (the_height/2)
         self.master.geometry('%dx%d+%d+%d' % (the_width, the_height, x, y))
 
-        self.master.overrideredirect(True)
-        self.lift()
-
 if __name__ == '__main__':
     root = tk.Tk()
     root.configure(background='#f2d2a9')
+
+    root.title("Clue-Less Application Game Board")
 
     gameBoard={}
 
