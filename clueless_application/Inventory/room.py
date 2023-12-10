@@ -26,7 +26,4 @@ class Room:
    def leaveRoom(self, character):
       self.occupiedBy.remove(character)
       if (self.occupiedBy.length == 0):
-         self.occupied = False
-
-   def getRoomLocation(self, location):
-      return location     
+         self.occupied = False  

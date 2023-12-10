@@ -1,6 +1,5 @@
 from typing import Any
 
-
 class Hallway:
    def __init__(self, location, occupied, occupiedBy):
         self.location = location
