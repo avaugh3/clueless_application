@@ -1,3 +1,6 @@
+import tkinter as tk
+from tkinter import *
+
 class GameBoard:
 
     def __init__(self, roomArr, hallwayArr, gameBoardGrid=None):

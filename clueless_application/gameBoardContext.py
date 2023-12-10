@@ -42,15 +42,15 @@ if __name__ == '__main__':
     root.title("Clue-Less Application Game Board")
 
     # Rooms (9)
-    study = Room('Study', (0,0), False, 'N/A')
-    hall = Room('Hall', (0,2), False, 'N/A')
-    lounge = Room('Lounge', (0,4), False, 'N/A')
-    library = Room('Library', (2,0), False, 'N/A')
-    billiardRoom = Room('Billiard Room', (2,2), False, 'N/A')
-    diningRoom = Room('Dining Room', (2,4), False, 'N/A')
-    conservatory = Room('Conservatory', (4,0), False, 'N/A')
-    ballroom = Room('Ballroom', (4,2), False, 'N/A')
-    kitchen = Room('Kitchen', (4,4), False, 'N/A')
+    study = Room('study', (0,0), False, 'N/A')
+    hall = Room('hall', (0,2), False, 'N/A')
+    lounge = Room('lounge', (0,4), False, 'N/A')
+    library = Room('library', (2,0), False, 'N/A')
+    billiardRoom = Room('billiardroom', (2,2), False, 'N/A')
+    diningRoom = Room('diningroom', (2,4), False, 'N/A')
+    conservatory = Room('conservatory', (4,0), False, 'N/A')
+    ballroom = Room('ballroom', (4,2), False, 'N/A')
+    kitchen = Room('kitchen', (4,4), False, 'N/A')
 
     roomArray = [study, hall, lounge, library, billiardRoom, diningRoom, conservatory, ballroom, kitchen]
 
@@ -98,22 +98,17 @@ if __name__ == '__main__':
 
     # To start the game, display each of the characters
     # ex. to see how 1 character would appear inside of the gameboard, uncomment line 
-    def displayCharacters():
+    def displayCharacters(missScarletB, professorPlumB, mrsPeacockB, mrGreenB, mrsWhiteB, colonelMustardB):
         # -- Testing purposes --
         # if uncommented, can see how how it'd look for 1 character
         # to reside in one cell (e.g., hallway between Hall and Lounge)
-        # missScarlet.place(x=665, y=140, anchor=NW) 
-
-        missScarlet.place(x=665, y=25, anchor=NW)
-        professorPlum.place(x=20, y=262, anchor=NW)
-        mrsPeacock.place(x=20, y=480, anchor=NW)
-        mrGreen.place(x=380, y=780, anchor=S)
-        mrsWhite.place(x=715, y=780, anchor=S)
-        colonelMustard.place(x=1052, y=255, anchor=NE)
-
-        # meeting discussion - would want to get cell widths and heights
-        # for the cells to determine range of x and y values that would fall 
-        # under certain cells which represent particular rooms, hallways, or null spaces
+        # missScarletB.place(x=665, y=140, anchor=NW) 
+        missScarletB.place(x=665, y=25, anchor=NW)
+        professorPlumB.place(x=20, y=262, anchor=NW)
+        mrsPeacockB.place(x=20, y=480, anchor=NW)
+        mrGreenB.place(x=380, y=780, anchor=S)
+        mrsWhiteB.place(x=715, y=780, anchor=S)
+        colonelMustardB.place(x=1052, y=255, anchor=NE)
 
         # -- Testing purposes --
         # if uncommented, can quickly see how it'd look for >1 character
@@ -121,18 +116,22 @@ if __name__ == '__main__':
         # professorPlum.place(x=123, y=153, anchor=NW)
         # mrsPeacock.place(x=190, y=153, anchor=NW)
 
-    # Future - tentative
-    # param1: the character (as a button) to update the gameBoard's location with  
-    # param2: the character's current coordinate (i.e., current location)
-    # param3: the character's new coordinate (i.e., new/desired location)
-    def updateGameBoard(characterButton, currentCoordinate, newCoordinate):
-        print("Updating gameboard...")
-        #view.update_idletasks()
+    def updateGameBoardGridGui(charButton, currentLocationGui=(), newLocationGui=()):
+        # checking that a move can be made using a board update
+        # expected validation that would occur
+        # ex valid move checks
+        # - if first move, trying to move to a location that is not a Hallway adjacent to starting block (i.e., home square)
+        # - not trying to go into a void gray space (neither Room nor Hallway)
+        # - not trying to go into a Hallway that is already occupied 
+        # - not trying to take a secret passageway from a room that doesn't have a secret passageway (info board to handle)
+        # ex other update happening 
+        # - updating Character info (e.g., the character's location)
+        charButton.place(x=newLocationGui[0], y=newLocationGui[1])
 
     def startGame():
         global gameBoardGridGui
         print("Clue-Less Game Started!")
-        contextForGameBoard.pack_forget()
+        contextForGameBoard.pack_forget() 
 
         # -- Testing purposes --
         # if uncommented, a Character instantiation for Miss Scarlet would occur 
@@ -157,14 +156,7 @@ if __name__ == '__main__':
         # For line below, should also uncomment testing purposes line in Room's isOccupiedBy method
         # print('Room ' + (gameBoard.gameBoardGrid[0][0].getName() + ' is occupied by ' + gameBoard.gameBoardGrid[0][0].isOccupiedBy()))
         gameBoard.printGameBoardGrid()
-
-        # -- Testing purposes --
-        # if uncommented and Miss Scarlet moved to the hallway between the Hall and Lounge
-        #   hallLoungeHallway.isOccupied would be updated to True 
-        #   hallLoungeHallway.occupiedBy would be updated to the character's name (Miss Scarlet in this case)
-        # hallLoungeHallway.isOccupied = True
-        # hallLoungeHallway.occupiedBy = missScarletChar.getName()
-
+        
         # set up the view of the game board
         def printgameBoardGridGui(view):
             gameBoardGridGui={}
@@ -320,7 +312,7 @@ if __name__ == '__main__':
         print(viewCanvas.gettags(CURRENT))
         viewCanvas.itemconfig(CURRENT, fill="LightSalmon3")
 
-        displayCharacters()
+        displayCharacters(missScarletButton, professorPlumButton, mrsPeacockButton, mrGreenButton, mrsWhiteButton, colonelMustardButton)
 
         exit_button = Button(root, text="Exit Game", bg="red", fg="white", command=endGame) 
         exit_button.place(x=985, y=134) 
@@ -351,6 +343,20 @@ if __name__ == '__main__':
 
         #show the gameboard in the Canvas
         gameBoardGridGui = printgameBoardGridGui(viewCanvas)
+        
+        # -- Testing purposes (updating a character's position on GUI game board) --
+        # if uncommented, would move Miss Scarlet from her starting block position into 
+        # the Hallway between the Hall and Lounge
+        #missScarletCharacter = Character("missscarlet")
+        #charDict = {missScarletCharacter.name : missScarletButton}
+
+        #theCurrentLocationX = missScarletButton.winfo_rootx()-238 
+        #theCurrentLocationY = missScarletButton.winfo_rooty()-63
+
+        #currentLocation = (theCurrentLocationX, theCurrentLocationY)
+        #newLocation = (theCurrentLocationX, theCurrentLocationY+115)
+        
+        #updateGameBoardGridGui(charDict.get('missscarlet'), currentLocation, newLocation)
     
     contextForGameBoard = GameBoardContext(root)
     contextForGameBoard.config(bg='#f2d2a9')
@@ -368,35 +374,35 @@ if __name__ == '__main__':
     clueLessSplashScreenButton.config(image=splashScreenPhoto, width='575', height='500')
     clueLessSplashScreenButton.place(x=100, y=115, anchor=NW)
 
-    missScarlet=Button(root, text='miss scarlet')
+    missScarletButton=Button(root, text='missscarlet')
     missScarletPhoto=PhotoImage(file='miss-scarlet-with-name.png')
-    missScarlet.config(image=missScarletPhoto, width='70', height='70')
-    missScarlet.place_forget()
+    missScarletButton.config(image=missScarletPhoto, width='70', height='70')
+    missScarletButton.place_forget()
 
-    professorPlum=Button(root, text='professor plum')
+    professorPlumButton=Button(root, text='professorplum')
     professorPlumPhoto=PhotoImage(file='professor-plum-with-name.png')
-    professorPlum.config(image=professorPlumPhoto, width='70', height='70')
-    professorPlum.place_forget()
+    professorPlumButton.config(image=professorPlumPhoto, width='70', height='70')
+    professorPlumButton.place_forget()
 
-    mrsPeacock=Button(root, text='mrs. peacock')
+    mrsPeacockButton=Button(root, text='mrspeacock')
     mrsPeacockPhoto=PhotoImage(file='mrs-peacock-with-name.png')
-    mrsPeacock.config(image=mrsPeacockPhoto, width='70', height='70')
-    mrsPeacock.place_forget()
+    mrsPeacockButton.config(image=mrsPeacockPhoto, width='70', height='70')
+    mrsPeacockButton.place_forget()
 
-    mrGreen=Button(root, text='mr. green')
+    mrGreenButton=Button(root, text='mrgreen')
     mrGreenPhoto=PhotoImage(file='mr-green-with-name.png')
-    mrGreen.config(image=mrGreenPhoto, width='70', height='70')
-    mrGreen.place_forget()
+    mrGreenButton.config(image=mrGreenPhoto, width='70', height='70')
+    mrGreenButton.place_forget()
 
-    mrsWhite=Button(root, text='mrs. white')
+    mrsWhiteButton=Button(root, text='mrswhite')
     mrsWhitePhoto=PhotoImage(file='mrs-white-with-name.png')
-    mrsWhite.config(image=mrsWhitePhoto, width='70', height='70')
-    mrsWhite.place_forget()
+    mrsWhiteButton.config(image=mrsWhitePhoto, width='70', height='70')
+    mrsWhiteButton.place_forget()
 
-    colonelMustard=Button(root, text='colonel mustard')
+    colonelMustardButton=Button(root, text='colonelmustard')
     colonelMustardPhoto=PhotoImage(file='col-mustard-with-name.png')
-    colonelMustard.config(image=colonelMustardPhoto, width='70', height='70')
-    colonelMustard.place_forget()
+    colonelMustardButton.config(image=colonelMustardPhoto, width='70', height='70')
+    colonelMustardButton.place_forget()
 
     clueLessNameForFrame = Label(root, text='Clue-Less', font=('Arial 20 bold'))
     clueLessNameForFrame.config(bg='#f2d2a9', fg='#000C66')
