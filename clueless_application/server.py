@@ -25,11 +25,24 @@ class CluelessServer:
         self.characters = ['missscarlet', 'colonelmustard', 'missuswhite', 'mistergreen', 'missuspeacock', 'professorplum']
         self.playersReady = 0
         self.currentSuggestion = ["dagger", "study", "rope"]
+        self.occupancyMatrix = [[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]
+        self.characterLocations = OrderedDict()
+
+    def initializeCharacter(self, client, message):
+        print("Initializing character and joining them to game...")
+        characterName = message.contents['characterName']
+        characterLocation = message.contents['startingLocation']
+
+        self.occupancyMatrix[characterLocation[0]][characterLocation[1]] += 1
+        self.characterLocations[characterName] = characterLocation
+        print(self.occupancyMatrix)
+        print(self.characterLocations)
 
     def validateMove(self, client, message):
         print("Beginning Move Validation")
         direction = message.contents['direction']
         currentLocation = message.contents['currentLocation']
+        characterName = message.originalCharacterName
         newLocation = currentLocation.copy()
 
         if (direction == "left" or direction == "right" or direction == "up" or direction == "down"):
@@ -43,21 +56,34 @@ class CluelessServer:
                 newLocation[1] = currentLocation[1] + 1
 
             if (newLocation[0] < 5 and newLocation[1] < 5 and newLocation[0]>-1 and newLocation[1]>-1):
-                contents = {}
-                info = f"Message From Server: Move Validated, New Location is {newLocation}"
-                contents["newLocation"] = newLocation
-                contents["info"] = info
-            
-                updateMessage = Message("updateLocation", "Server", contents)
+                if (newLocation[0] % 2 != 0 and newLocation[1] % 2 == 0 and self.occupancyMatrix[newLocation[0]][newLocation[1]] > 0) or (newLocation[0] % 2 == 0 and newLocation[1] % 2 != 0 and self.occupancyMatrix[newLocation[0]][newLocation[1]] > 0):
+                    contents = {}
+                    contents["info"] = f"Message From Server: Invalid move, hallway is occupied!"
+                    updateMessage = Message("info", "Server", contents)
     
-                self.sendMessageToSpecificClient(client, updateMessage)
+                    self.sendMessageToSpecificClient(client, updateMessage)
+                    print(f"Invalid move, hallway is occupied!")
+                else:
+                    self.occupancyMatrix[currentLocation[0]][currentLocation[1]] -= 1
+                    self.occupancyMatrix[newLocation[0]][newLocation[1]] += 1
+
+                    self.characterLocations[characterName] = newLocation
+                    
+                    contents = {}
+                    info = f"Message From Server: Move Validated, New Location is {newLocation}"
+                    contents["newLocation"] = newLocation
+                    contents["info"] = info
                 
-                print(f"Move Validated: {message.originalCharacterName} moved from {currentLocation} to {newLocation}")
+                    updateMessage = Message("updateLocation", "Server", contents)
+        
+                    self.sendMessageToSpecificClient(client, updateMessage)
+                    
+                    print(f"Move Validated: {message.originalCharacterName} moved from {currentLocation} to {newLocation}")
 
-                contents["info"] = f"Move Validated: {message.originalCharacterName} moved from {currentLocation} to {newLocation}"
-                broadcastMessage = Message("info", "Server", contents)
+                    contents["info"] = f"Move Validated: {message.originalCharacterName} moved from {currentLocation} to {newLocation}"
+                    broadcastMessage = Message("info", "Server", contents)
 
-                self.broadcastMessage(self.clients, broadcastMessage)
+                    self.broadcastMessage(self.clients, broadcastMessage)
             else:
                 contents = {}
                 contents["info"] = f"Message From Server: Invalid move, move is out of bounds of game board!"
@@ -85,6 +111,11 @@ class CluelessServer:
                 newLocation[1] = 0
             
             if (validMove):
+                self.occupancyMatrix[currentLocation[0]][currentLocation[1]] -= 1
+                self.occupancyMatrix[newLocation[0]][newLocation[1]] += 1
+
+                self.characterLocations[characterName] = newLocation
+                
                 contents = {}
                 info = f"Message From Server: Move Validated, New Location is {newLocation}"
                 contents["newLocation"] = newLocation
@@ -108,7 +139,6 @@ class CluelessServer:
                 self.sendMessageToSpecificClient(client, updateMessage)
                 print(f"Invalid move, your current room does not have a secret passage!")
             
-                
         else:
             contents = {}
             contents["info"] = f"Message From Server: Invalid move direction \"{direction}\""
@@ -116,6 +146,9 @@ class CluelessServer:
     
             self.sendMessageToSpecificClient(client, updateMessage)
             print(f"Invalid Move Direction \"{direction}\".")
+        
+        print(self.occupancyMatrix)
+        print(self.characterLocations)
      
     def validateSuggestion(self, client, message):
         print("Beginning Suggestion Validation")
@@ -308,6 +341,10 @@ class CluelessServer:
 
         elif loaded_msg.type == 'disprove':
             self.validateDisprove(client, loaded_msg)
+
+        elif loaded_msg.type == 'character_init':
+            self.initializeCharacter(client, loaded_msg)
+
         else:
             print(f"Processing Failed: Unknown Message Type \"{loaded_msg.type}\"")
 

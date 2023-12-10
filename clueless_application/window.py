@@ -6,6 +6,7 @@ import threading
 from messaging.message import Message
 from Inventory.character import Character
 from Inventory.inventory import Inventory
+from infoBoard import InfoBoard
 #following geeks for geeks tutorial 
 #client connection
 #TODO: HOST = input("Enter IP Address of ClueLess Server: ")
@@ -26,14 +27,11 @@ def checkServer(player):
     
 def moveMessage():
     contents = {}
-    #printLine = 'window sending move ' + inputValMove.get()
-    #consoleOutput(printLine)
     contents["direction"] = inputValMove.get()
     contents["currentLocation"] = client.boardLocation
     printLine = f"Player {original_character_name} requests move {contents['direction']} from {contents['currentLocation']}"
     consoleOutput(printLine)
     move_message = Message("move", original_character_name, contents)
-    #consoleOutput(move_message)
     client.send_message(move_message)
     
 def suggesstionMessage():
@@ -120,11 +118,29 @@ if __name__ == "__main__":
     except:
         pass
 
+
     print(f"Welcome to Clue-Less!\n")
-    original_character_name = input("Please enter your character name: ")
-    original_character_name = original_character_name.title()
-    client.character.name = original_character_name
-    client.playerName = original_character_name
+    
+    while True:
+        print(f"Select from the following characters: {client.availableCharacters}")
+        original_character_name = input("Please enter your character name: ")
+        #original_character_name = original_character_name.title()
+        
+        if original_character_name in client.availableCharacters:
+            client.character.name = original_character_name
+            client.playerName = original_character_name
+            break
+        else:
+            print("Invalid Character Name, Please Select Again")
+
+    #Send character init message
+    contents = {}
+    contents["characterName"] = client.character.name
+    contents["startingLocation"] = client.boardLocation
+
+    init_message = Message("character_init", original_character_name, contents)
+    
+    client.send_message(init_message)
     
     client.ready = True
     initial_message = 'ready'
@@ -143,12 +159,11 @@ if __name__ == "__main__":
             client.send_message(ready_message)
             client.ready = True
             break
-    
 
     #*****************************************#
     #****************************************#
     #*********Window implementation **********#
-
+    
     # root window (main window)
     root = tk.Tk()
     root.title("Clue-Less Application")
@@ -261,6 +276,5 @@ if __name__ == "__main__":
     #Start thread to listen for messages from server
     data_thread = threading.Thread(target=checkServer, args=(client,))
     data_thread.start()
-
-    root.mainloop()
     
+    root.mainloop()

@@ -24,6 +24,7 @@ class CluelessClient:
         #self.ready = False
         self.ready = True
         self.gameStarted = False
+        self.availableCharacters = ['missscarlet', 'colonelmustard', 'missuswhite', 'mistergreen', 'missuspeacock', 'professorplum']
         
 
     def setBoardLocation(self,location):
@@ -119,10 +120,19 @@ if __name__ == "__main__":
         pass
 
     print(f"Welcome to Clue-Less!\n")
-    original_character_name = input("Please enter your character name: ")
+    original_character_name = input("Please enter your character's name: ")
     original_character_name = original_character_name.title()
     client.character.name = original_character_name
     client.playerName = original_character_name
+
+    #Send character init message
+    contents = {}
+    contents["characterName"] = client.character.name
+    contents["startingLocation"] = client.boardLocation
+
+    init_message = Message("character_init", original_character_name, contents)
+    
+    client.send_message(init_message)
 
     while True:
         #Check for server message each loop iteration
