@@ -1,9 +1,9 @@
 class Room:
    def __init__(self, roomName, location, occupied, occupiedBy):
-        self.roomName = roomName
-        self.location = location
-        self.occupied = occupied
-        self.occupiedBy = occupiedBy
+      self.roomName = roomName
+      self.location = location
+      self.occupied = occupied
+      self.occupiedBy = occupiedBy
 
    def getName(self):
       return self.roomName
@@ -15,6 +15,9 @@ class Room:
       return self.occupied
    
    def isOccupiedBy(self):
+      # -- Testing purposes --
+      # if uncommented can confirm that a character, by name is occupying a given room
+      # self.occupiedBy = 'Miss Scarlet'
       return self.occupiedBy
 
    def joinRoom(self, character):

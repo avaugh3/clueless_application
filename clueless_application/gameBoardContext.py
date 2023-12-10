@@ -5,6 +5,8 @@ import os
 from Inventory.character import Character
 from Inventory.hallway import Hallway
 from Inventory.room import Room
+from gameboard.gameBoard import GameBoard 
+
 # beginning foundation for tkinter game board: stackoverflow
 
 #### Optional Steps to Display the Clue-Less Game Board (stand-alone)  ####
@@ -13,8 +15,8 @@ from Inventory.room import Room
 # -------------------------------------------------------------------------
 # 1. Open a terminal window
 # 2. Navigate to the clueless_application directory
-# 3. Run the gameBoard.py file
-#    python3 gameBoard.py
+# 3. Run the gameBoardContext.py file
+#    python3 gameBoardContext.py
 
 # Set up foundational context frame in which the game board grid sits 
 class GameBoardContext(Frame):
@@ -39,20 +41,51 @@ if __name__ == '__main__':
 
     root.title("Clue-Less Application Game Board")
 
-    gameBoard={}
+    # Rooms (9)
+    study = Room('Study', (0,0), False, 'N/A')
+    hall = Room('Hall', (0,2), False, 'N/A')
+    lounge = Room('Lounge', (0,4), False, 'N/A')
+    library = Room('Library', (2,0), False, 'N/A')
+    billiardRoom = Room('Billiard Room', (2,2), False, 'N/A')
+    diningRoom = Room('Dining Room', (2,4), False, 'N/A')
+    conservatory = Room('Conservatory', (4,0), False, 'N/A')
+    ballroom = Room('Ballroom', (4,2), False, 'N/A')
+    kitchen = Room('Kitchen', (4,4), False, 'N/A')
+
+    roomArray = [study, hall, lounge, library, billiardRoom, diningRoom, conservatory, ballroom, kitchen]
+
+    # Hallways (12)
+    studyHallHallway = Hallway((0,1), False, 'N/A')
+    hallLoungeHallway = Hallway((0,3), False, 'N/A')
+    studyLibraryHallway = Hallway((1,0), False, 'N/A')
+    hallBilliardRoomHallway = Hallway((1,2), False, 'N/A')
+    loungeDiningRoomHallway = Hallway((1,4), False, 'N/A')
+    libraryBilliardRoomHallway = Hallway((2,1), False, 'N/A')
+    billiardRoomDiningRoomHallway = Hallway((2,3), False, 'N/A')
+    libraryConservatoryHallway = Hallway((3,0), False, 'N/A')
+    billiardRoomBallroomHallway = Hallway((3,2), False, 'N/A')
+    diningRoomKitchenHallway = Hallway((3,4), False, 'N/A')
+    conservatoryBallroomHallway = Hallway((4,1), False, 'N/A')
+    ballroomKitchenHallway = Hallway((4,3), False, 'N/A')
+
+    hallwayArray = [studyHallHallway, hallLoungeHallway, studyLibraryHallway, hallBilliardRoomHallway, loungeDiningRoomHallway, 
+        libraryBilliardRoomHallway, billiardRoomDiningRoomHallway, libraryConservatoryHallway,billiardRoomBallroomHallway, 
+        diningRoomKitchenHallway, conservatoryBallroomHallway, ballroomKitchenHallway]
+
+    gameBoardGridGui={}
 
     def displayCoordinateForCellClicked(row, column, canvas):
-      canvas.itemconfig(gameBoard[(row, column)])
+      canvas.itemconfig(gameBoardGridGui[(row, column)])
 
     keyWidth = root.winfo_screenwidth()
     keyHeight = root.winfo_screenheight()
 
-    def getGameBoard():
+    def getgameBoardGridGui():
       # create context for the game board grid
       val = Canvas(root, width=keyWidth, height=keyHeight, bg='#f2d2a9')
       return val
 
-    viewCanvas = getGameBoard()
+    viewCanvas = getgameBoardGridGui()
 
     def endGame():
         def quitGame():
@@ -97,38 +130,30 @@ if __name__ == '__main__':
         #view.update_idletasks()
 
     def startGame():
-        global gameBoard
+        global gameBoardGridGui
         print("Clue-Less Game Started!")
         contextForGameBoard.pack_forget()
 
         # -- Testing purposes --
         # if uncommented, a Character instantiation for Miss Scarlet would occur 
-        #  missScarletChar = Character('Miss  Scarlet')
+        #  missScarletCharacter = Character('Miss  Scarlet')
 
-        # Rooms created (9)
-        study = Room('Study', {0,0}, False, 'N/A')
-        hall = Room('Hall', {0,2}, False, 'N/A')
-        lounge = Room('Lounge', {0,4}, False, 'N/A')
-        library = Room('Library', {2,0}, False, 'N/A')
-        billiardRoom = Room('Billiard Room', {2,2}, False, 'N/A')
-        diningRoom = Room('Dining Room', {2,4}, False, 'N/A')
-        conservatory = Room('Conservatory', {4,0}, False, 'N/A')
-        ballroom = Room('Ballroom', {4,2}, False, 'N/A')
-        kitchen = Room('Kitchen', {4,4}, False, 'N/A')
+        gameBoard = GameBoard(roomArray, hallwayArray)
+        grid = gameBoard.getGameBoardGrid()
+        gameBoard.gameBoardGrid = grid
 
-        # Hallways created (12)
-        studyHallHallway = Hallway({0,1}, False, 'N/A')
-        hallLoungeHallway = Hallway({0,3}, False, '')
-        studyLibraryHallway = Hallway({1,0}, False, 'N/A')
-        hallBilliardRoomHallway = Hallway({1,2}, False, 'N/A')
-        loungeDiningRoomHallway = Hallway({1,4}, False, 'N/A')
-        libraryBilliardRoomHallway = Hallway({2,1}, False, 'N/A')
-        billiardRoomDiningRoomHallway = Hallway({2,3}, False, 'N/A')
-        libraryConservatoryHallway = Hallway({3,0}, False, 'N/A')
-        billiardBallroomHallway = Hallway({3,2}, False, 'N/A')
-        diningRoomKitchenHallway = Hallway({3,4}, False, 'N/A')
-        conservatoryBallroomHallway = Hallway({4,1}, False, 'N/A')
-        ballroomKitchenHallway = Hallway({4,3}, False, 'N/A')
+        # -- Testing purposes --
+        # if uncommented can confirm that for the game board instance's grid, accessing a particular cell 
+        # as expected for its position gives the expected name 
+        # in this case 0,0 in the game board grid should be a room with the name of Study 
+        # Study room key info from 5 x 5 game board grid below
+        # val = gameBoard.gameBoardGrid 
+        # print(val[0][0].getName())
+        # print(val[0][0].getLocation())
+        # print(val[0][0].isOccupied()) 
+        # For line below, should also uncomment testing purposes line in Room's isOccupiedBy method
+        # print('Room ' + (val[0][0].getName() + ' is occupied by ' + val[0][0].isOccupiedBy()))
+        gameBoard.printGameBoardGrid()
 
         # -- Testing purposes --
         # if uncommented and Miss Scarlet moved to the hallway between the Hall and Lounge
@@ -138,8 +163,8 @@ if __name__ == '__main__':
         # hallLoungeHallway.occupiedBy = missScarletChar.getName()
 
         # set up the view of the game board
-        def printGameBoard(view):
-            gameBoard={}
+        def printgameBoardGridGui(view):
+            gameBoardGridGui={}
             width_to_use=view.winfo_width()
             height_to_use=view.winfo_height()
 
@@ -165,7 +190,7 @@ if __name__ == '__main__':
                         view.create_text(75, 20, text='Study', font=("Courier bold", 12), fill='black')
 
                         view.itemconfig(rect, tags=(str(rowNumber), str(columnNumber)))
-                        gameBoard[(row,col)]=rect
+                        gameBoardGridGui[(row,col)]=rect
 
                     elif (row == 0 and col == 2):
                         columnNumber = columnNumber + 1
@@ -177,7 +202,7 @@ if __name__ == '__main__':
 
                         view.create_text(420, 20, text='Hall', font=("Courier bold", 12), fill='black')
                         view.itemconfig(rect, tags=(str(rowNumber), str(columnNumber)))
-                        gameBoard[(row,col)]=rect
+                        gameBoardGridGui[(row,col)]=rect
 
                     elif (row == 0 and col == 4):
                         columnNumber = columnNumber + 1
@@ -189,7 +214,7 @@ if __name__ == '__main__':
 
                         view.create_text(750, 20, text='Lounge', font=("Courier bold", 12), fill='black')
                         view.itemconfig(rect, tags=(str(rowNumber), str(columnNumber)))
-                        gameBoard[(row,col)]=rect
+                        gameBoardGridGui[(row,col)]=rect
 
                     elif (row == 2 and col == 0):
                         columnNumber = columnNumber + 1
@@ -201,7 +226,7 @@ if __name__ == '__main__':
 
                         view.create_text(75, 235, text='Library', font=("Courier bold", 12), fill='black')
                         view.itemconfig(rect, tags=(str(rowNumber), str(columnNumber)))
-                        gameBoard[(row,col)]=rect
+                        gameBoardGridGui[(row,col)]=rect
 
                     elif (row == 2 and col == 2):
                         columnNumber = columnNumber + 1
@@ -213,7 +238,7 @@ if __name__ == '__main__':
 
                         view.create_text(420, 235, text='Billiard Room', font=("Courier bold", 12), fill='black')
                         view.itemconfig(rect, tags=(str(rowNumber), str(columnNumber)))
-                        gameBoard[(row,col)]=rect
+                        gameBoardGridGui[(row,col)]=rect
 
                     elif (row == 2 and col == 4):
                         columnNumber = columnNumber + 1
@@ -225,7 +250,7 @@ if __name__ == '__main__':
 
                         view.create_text(750, 235, text='Dining Room', font=("Courier bold", 12), fill='black')
                         view.itemconfig(rect, tags=(str(rowNumber), str(columnNumber)))
-                        gameBoard[(row,col)]=rect
+                        gameBoardGridGui[(row,col)]=rect
 
                     elif (row == 4 and col == 0):
                         columnNumber = columnNumber + 1
@@ -237,7 +262,7 @@ if __name__ == '__main__':
 
                         view.create_text(75, 460, text='Conservatory', font=("Courier bold", 12), fill='black')
                         view.itemconfig(rect, tags=(str(rowNumber), str(columnNumber)))
-                        gameBoard[(row,col)]=rect
+                        gameBoardGridGui[(row,col)]=rect
 
                     elif (row == 4 and col == 2):
                         columnNumber = columnNumber + 1
@@ -249,7 +274,7 @@ if __name__ == '__main__':
 
                         view.create_text(420, 460, text='Ballroom', font=("Courier bold", 12), fill='black')
                         view.itemconfig(rect, tags=(str(rowNumber), str(columnNumber)))
-                        gameBoard[(row,col)]=rect
+                        gameBoardGridGui[(row,col)]=rect
 
                     elif (row == 4 and col == 4):
                         columnNumber = columnNumber + 1
@@ -261,20 +286,20 @@ if __name__ == '__main__':
 
                         view.create_text(750, 460, text='Kitchen', font=("Courier bold", 12), fill='black')
                         view.itemconfig(rect, tags=(str(rowNumber), str(columnNumber)))
-                        gameBoard[(row,col)]=rect
+                        gameBoardGridGui[(row,col)]=rect
 
                     elif ((row == 0 and col == 1) or (row == 0 and col == 3) or (row == 1 and col ==0) or (row == 1 and col == 2) or (row == 2 and col == 3) or (row == 3 and col == 0) or (row == 3 and col == 2) or (row == 3 and col == 4) or (row == 2 and col == 1)
                         or (row == 2 and col == 3) or (row == 1 and col == 2) or (row == 1 and col == 4) or (row == 4 and col == 1) or (row == 4 and col == 3)):
                             columnNumber = columnNumber + 1
                             rect = view.create_rectangle(col * gridWidth,
-                           row * gridHeight,
+                            row * gridHeight,
                             (col + 1) * gridWidth,
                             (row + 1) * gridHeight,
                             fill = 'LightSalmon3')
 
                             view.create_text(685, 545, font=("Courier bold", 12), fill='black')
                             view.itemconfig(rect, tags=(str(rowNumber), str(columnNumber)))
-                            gameBoard[(row,col)]=rect
+                            gameBoardGridGui[(row,col)]=rect
 
                     else: 
                         columnNumber = columnNumber + 1
@@ -285,8 +310,8 @@ if __name__ == '__main__':
                         fill = 'grey')
 
                         view.itemconfig(rect, tags=(str(rowNumber), str(columnNumber)))
-                        gameBoard[(row,col)]=rect
-            return gameBoard
+                        gameBoardGridGui[(row,col)]=rect
+            return gameBoardGridGui
         
         viewCanvas.pack(side=TOP, fill=BOTH, padx=120, pady=120)
         print(viewCanvas.gettags(CURRENT))
@@ -322,12 +347,12 @@ if __name__ == '__main__':
         root.update_idletasks()
 
         #show the gameboard in the Canvas
-        gameBoard = printGameBoard(viewCanvas)
+        gameBoardGridGui = printgameBoardGridGui(viewCanvas)
     
     contextForGameBoard = GameBoardContext(root)
     contextForGameBoard.config(bg='#f2d2a9')
 
-    endGameButton=Button(contextForGameBoard, text='End Game',command=endGame)
+    endGameButton=Button(contextForGameBoard, text='End Game', command=endGame)
     endGameButton.place(x=950, y=600, anchor=E)
     endGameButton.config(bg='#78a8bc', fg ='white')
 
@@ -340,7 +365,6 @@ if __name__ == '__main__':
     clueLessSplashScreenButton.config(image=splashScreenPhoto, width='575', height='500')
     clueLessSplashScreenButton.place(x=100, y=115, anchor=NW)
 
-    # temp testing to show Miss Scarlet in the hallway between the Hall and Lounge
     missScarlet=Button(root, text='miss scarlet')
     missScarletPhoto=PhotoImage(file='miss-scarlet-with-name.png')
     missScarlet.config(image=missScarletPhoto, width='70', height='70')
