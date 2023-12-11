@@ -16,7 +16,6 @@ import pickle
 #TODO: HOST = input("Enter IP Address of ClueLess Server: ")
 #TODO: PORT = int(input("Enter Port Number of Clueless Server: "))
 
-inventoryList = []
 def consoleOutput(message):
     outputtext.insert(END, message + '\n')
 
@@ -62,6 +61,9 @@ def checkServer(player):
                 #print(loaded_msg.type)
                 if (loaded_msg.type == "loadInventory"):
                     print("Loading Client Inventory within window file")
+                    global roomInventory
+                    global weaponInventory
+                    global characterInventory
                     roomInventory = loaded_msg.contents['rooms']
                     weaponInventory = loaded_msg.contents['weapons']
                     characterInventory = loaded_msg.contents['characters']
@@ -140,8 +142,9 @@ def disproveMessage():
         #contents['itemType'] = inventory_type_to_disprove_suggestion
         contents['item'] = disprove_item
                         #-------------------------------------------------------------
-
-        if (disprove_item.replace(" ","").lower() in client.characterInventory or disprove_item.replace(" ","").lower() in client.roomInventory or disprove_item.replace(" ","").lower() in client.weaponInventory):
+        print(disprove_item)
+        print(client.weaponInventory)
+        if (disprove_item.replace(" ","").lower() in weaponInventory or disprove_item.replace(" ","").lower() in roomInventory or disprove_item.replace(" ","").lower() in characterInventory):
             disprove_message = Message("disprove", original_character_name, contents)
                         #disprove_message.printMessage()
             client.send_message(disprove_message)
