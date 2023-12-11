@@ -137,7 +137,7 @@ class InfoBoard(Frame):
 
         #Display Checklist of all possible items
         RoomItems = ['Study', 'Hall','Lounge','Dining Room', 'Kitchen','Ballroom','Conservatory', 'Library', 'Billard Room']
-        characterItems = ['Miss Scarlet','Colonel Mustard', 'Missus White','Mister Green', 'Missus Peacock', 'Professor Plum'] 
+        characterItems = ['Miss Scarlet','Colonel Mustard', 'Mrs. White','Mr. Green', 'Mrs. Peacock', 'Professor Plum'] 
         weaponItems = ['Rope', 'Lead Pipe', 'Knife', 'Wrench', 'Candlestick', 'Revolver']
         checklist = Label(self, text="Item Checklists")
         checklist.config(font=("Courier", 15))
@@ -214,3 +214,4 @@ class InfoBoard(Frame):
         #Start thread to listen for messages from server
         data_thread = threading.Thread(target=self.checkServer, args=(self.client,outputtext,))
         data_thread.start()
+ 

@@ -10,7 +10,7 @@ class GameAnswer:
 
         self.weaponsList = ['rope', 'leadpipe', 'knife', 'wrench', 'candlestick', 'revolver', 'dagger']
         self.roomsList = ['study', 'hall', 'lounge', 'diningroom', 'kitchen', 'ballroom', 'conservatory', 'library', 'billardroom']
-        self.charactersList = ['missscarlet', 'colonelmustard', 'missuswhite', 'mistergreen', 'missuspeacock', 'professorplum']
+        self.charactersList = ['missscarlet', 'colonelmustard', 'mrswhite', 'mrgreen', 'mrspeacock', 'professorplum']
      
     
     def GenerateAnswer(self):
