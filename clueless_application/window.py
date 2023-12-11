@@ -28,6 +28,7 @@ def checkServer(player):
     
     global characterLocations
     global characterButtons
+
     #updateGameBoard(characterButtons)
     while True:
         updateGameBoard(characterButtons)
@@ -148,8 +149,8 @@ def accusationMessage():
 
 def showGameBoard():
     new_window = tk.Toplevel(root)
-    new_window.title("Clue-Less")
-    label = tk.Label(new_window, text="Clue-Less Game Board", font=("Helvetica", 20))
+    new_window.title("Clue-Less Game Board Window")
+    label = tk.Label(new_window, text="Clue-Less Game Board", font=("Arial", 20))
     label.pack()
     
     # Define the size of the grid and outer padding
@@ -171,9 +172,12 @@ def showGameBoard():
             x2 = x1 + cell_width
             y2 = y1 + cell_height
 
-            # Make the corners and specified cells medium seagreen
-            if (row, col) in [(0, 0), (0, 2), (0, 4), (2, 0), (2, 2), (2, 4), (4, 0), (4, 2), (4,4)]:
+            # Make the specified cells medium seagreen
+            if (row, col) in [(0, 2), (2, 0), (2, 2), (2, 4), (4, 2)]:
                 color = "medium seagreen"
+            # Make the corner rooms MediumPurple2 (indicating they contain secret passages)
+            elif (row, col) in [(0, 0), (0, 4), (4, 0), (4,4)]:
+                color = "MediumPurple2"
             # Make specified cells grey
             elif (row, col) in [(1, 1), (3, 1), (1, 3), (3, 3)]:
                 color = "grey"
@@ -187,63 +191,78 @@ def showGameBoard():
     label_text = "Study"
     label_x = cell_width/2 + outer_padding
     label_y = cell_height/2 + outer_padding * 1.3
-    canvas.create_text(label_x, label_y, text=label_text, fill="black", font=("Helvetica", 12), anchor="n")
+    canvas.create_text(label_x, label_y, text=label_text, fill="black", font=("arial", 10), anchor="n")
 
     label_text = "Hall"
     label_x = 5*cell_width/2 + outer_padding
     label_y = cell_height/2 + outer_padding * 1.3
-    canvas.create_text(label_x, label_y, text=label_text, fill="black", font=("Helvetica", 12), anchor="n")
+    canvas.create_text(label_x, label_y, text=label_text, fill="black", font=("arial", 10), anchor="n")
 
     label_text = "Lounge"
     label_x = 9*cell_width/2 + outer_padding
     label_y = cell_height/2 + outer_padding * 1.3
-    canvas.create_text(label_x, label_y, text=label_text, fill="black", font=("Helvetica", 12), anchor="n")
+    canvas.create_text(label_x, label_y, text=label_text, fill="black", font=("arial", 10), anchor="n")
 
     label_text = "Library"
     label_x = cell_width/2 + outer_padding
     label_y = 5*cell_height/2 + outer_padding * 1.3
-    canvas.create_text(label_x, label_y, text=label_text, fill="black", font=("Helvetica", 12), anchor="n")
+    canvas.create_text(label_x, label_y, text=label_text, fill="black", font=("arial", 10), anchor="n")
 
     label_text = "Billiard Room"
     label_x = 5*cell_width/2 + outer_padding
     label_y = 5*cell_height/2 + outer_padding * 1.3
-    canvas.create_text(label_x, label_y, text=label_text, fill="black", font=("Helvetica", 12), anchor="n")
+    canvas.create_text(label_x, label_y, text=label_text, fill="black", font=("arial", 10), anchor="n")
 
     label_text = "Dining Room"
     label_x = 9*cell_width/2 + outer_padding
     label_y = 5*cell_height/2 + outer_padding * 1.3
-    canvas.create_text(label_x, label_y, text=label_text, fill="black", font=("Helvetica", 12), anchor="n")
+    canvas.create_text(label_x, label_y, text=label_text, fill="black", font=("arial", 10), anchor="n")
 
     label_text = "Conservatory"
     label_x = cell_width/2 + outer_padding
     label_y = 9*cell_height/2 + outer_padding * 1.3
-    canvas.create_text(label_x, label_y, text=label_text, fill="black", font=("Helvetica", 12), anchor="n")
+    canvas.create_text(label_x, label_y, text=label_text, fill="black", font=("arial", 10), anchor="n")
 
     label_text = "Ballroom"
     label_x = 5*cell_width/2 + outer_padding
     label_y = 9*cell_height/2 + outer_padding * 1.3
-    canvas.create_text(label_x, label_y, text=label_text, fill="black", font=("Helvetica", 12), anchor="n")
+    canvas.create_text(label_x, label_y, text=label_text, fill="black", font=("arial", 10), anchor="n")
 
     label_text = "Kitchen"
     label_x = 9*cell_width/2 + outer_padding
     label_y = 9*cell_height/2 + outer_padding * 1.3
-    canvas.create_text(label_x, label_y, text=label_text, fill="black", font=("Helvetica", 12), anchor="n")
+    canvas.create_text(label_x, label_y, text=label_text, fill="black", font=("arial", 10), anchor="n")
 
     # Create buttons and store them in a dictionary
     characterButtons = {
-        "missscarlet": tk.Button(new_window, text="MS", width=4, height=3, font=("Helvetica", 8)),
-        "colonelmustard": tk.Button(new_window, text="CM", width=4, height=3, font=("Helvetica", 8)),
-        "missuswhite": tk.Button(new_window, text="MW", width=4, height=3, font=("Helvetica", 8)),
-        "mistergreen": tk.Button(new_window, text="MG", width=4, height=3, font=("Helvetica", 8)),
-        "missuspeacock": tk.Button(new_window, text="MP", width=4, height=3, font=("Helvetica", 8)),
-        "professorplum": tk.Button(new_window, text="PP", width=4, height=3, font=("Helvetica", 8))
+        "missscarlet": tk.Button(new_window, text="MS", width=2, height=2, font=("arial", 8), bg="firebrick3", fg="white"),
+        "colonelmustard": tk.Button(new_window, text="CM", width=2, height=2, font=("arial", 8), bg="DarkOrange2", fg="white"),
+        "mrswhite": tk.Button(new_window, text="MW", width=2, height=2, font=("arial", 8), bg="VioletRed3", fg="white"),
+        "mrgreen": tk.Button(new_window, text="MG", width=2, height=2, font=("arial", 8), bg="dark green", fg="white"),
+        "mrspeacock": tk.Button(new_window, text="MP", width=2, height=2, font=("arial", 8), bg="medium blue", fg="white"),
+        "professorplum": tk.Button(new_window, text="PP", width=2, height=2, font=("arial", 8), bg="purple4", fg="white"),
     }
 
     # Pack all buttons for demonstration purposes
+    for charButton in characterButtons.values():
+        charButton.pack_forget()
     for button in characterButtons.values():
         button.pack_forget()
-
     return characterButtons
+
+def formatCharacterName(charName):
+    if (charName == 'missscarlet'):
+        return 'Miss Scarlet'
+    elif (charName == 'colonelmustard'):
+        return 'Colonel Mustard'
+    elif (charName == 'mrswhite'):
+        return 'Mrs. White'
+    elif (charName == 'mrgreen'):
+        return 'Mr. Green'
+    elif (charName == 'mrspeacock'):
+        return 'Mrs. Peacock'
+    elif (charName == 'professorplum'):
+        return 'Professor Plum'
 
 def updateGameBoard(characterButtons):
     global characterLocations
@@ -341,17 +360,17 @@ if __name__ == "__main__":
     
     # root window (main window)
     root = tk.Tk()
-    root.title("Clue-Less Application")
+    root.title("Clue-Less User Window")
     root.geometry("800x800")
 
     # set title
     title = Label(root, text="Clue-Less Info Board")                        
     title.grid(row=0, column=0, sticky='', columnspan = 5)
-    title.config(font=("Courier", 34))
+    title.config(font=("Arial", 34))
 
     # display character Info
     #TODO it's with the get name function but that is just hard coded
-    characterInformation = 'Character Information: ' + client.character.name
+    characterInformation = 'Character Information: ' + formatCharacterName(client.character.name)
     characterdisplay = Label(root, text=characterInformation)
     characterdisplay.grid(row = 1, column=0, sticky='', columnspan = 5)
     characterdisplay.config(font=("Courier", 25))
@@ -369,7 +388,7 @@ if __name__ == "__main__":
 
     #Display Checklist of all possible items
     RoomItems = ['Study', 'Hall','Lounge','Dining Room', 'Kitchen','Ballroom','Conservatory', 'Library', 'Billard Room']
-    characterItems = ['Miss Scarlet','Colonel Mustard', 'Missus White','Mister Green', 'Missus Peacock', 'Professor Plum'] 
+    characterItems = ['Miss Scarlet','Colonel Mustard', 'Mrs. White','Mr. Green', 'Mrs. Peacock', 'Professor Plum'] 
     weaponItems = ['Rope', 'Lead Pipe', 'Knife', 'Wrench', 'Candlestick', 'Revolver']
     checklist = Label(root, text="Item Checklists")
     checklist.config(font=("Courier", 15))
@@ -451,7 +470,6 @@ if __name__ == "__main__":
     UserInputAccusationWeapon = OptionMenu(root, accusationInputWeapon, *weaponItems).grid(column=2, row=20, columnspan=1)
     UserInputAccusationRoom = OptionMenu(root, accusationInputRoom, *RoomItems).grid(column=3, row=20, columnspan=1)
     accusationButton = Button(root, text="Make Accusation", command=accusationMessage).grid(column=4, row=20, columnspan=5)
-
 
     #Game Board
     characterLocations = OrderedDict()

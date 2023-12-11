@@ -25,7 +25,7 @@ class CluelessClient:
         #self.ready = False
         self.ready = True
         self.gameStarted = False
-        self.availableCharacters = ['missscarlet', 'colonelmustard', 'missuswhite', 'mistergreen', 'missuspeacock', 'professorplum']
+        self.availableCharacters = ['missscarlet', 'colonelmustard', 'mrswhite', 'mrgreen', 'mrspeacock', 'professorplum']
         self.roomLocations = OrderedDict([
             ((0, 0), "Study"),
             ((2, 0), "Hall"),
@@ -190,7 +190,7 @@ if __name__ == "__main__":
                 client.send_message(move_message)
 
             elif initial_message == 'suggestion':
-                suggestion_suspect = input("Choose a Suspect: (options: Miss Scarlet, Colonel Mustard, Missus White, Mister Green, Missus Peacock, Professor Plum): ")
+                suggestion_suspect = input("Choose a Suspect: (options: Miss Scarlet, Colonel Mustard, Mrs. White, Mr. Green, Mrs. Peacock, Professor Plum): ")
                 suggestion_suspect = suggestion_suspect.title()
                 contents["suspect"] = suggestion_suspect
 
@@ -206,7 +206,7 @@ if __name__ == "__main__":
                 client.send_message(suggestion_message)
 
             elif initial_message == 'accusation':
-                accusation_suspect = input("Choose a Suspect: (options: Miss Scarlet, Colonel Mustard, Missus White, Mister Green, Missus Peacock, Professor Plum): ")
+                accusation_suspect = input("Choose a Suspect: (options: Miss Scarlet, Colonel Mustard, Mrs. White, Mr. Green, Mrs. Peacock, Professor Plum): ")
                 accusation_suspect = accusation_suspect.title()
                 contents["suspect"] = accusation_suspect
 

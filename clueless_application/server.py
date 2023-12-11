@@ -22,7 +22,7 @@ class CluelessServer:
         self.charactersInventory, self.roomsInventory, self.weaponsInventory = self.winningAnswer.dealInventory()
         self.weapons = ['rope', 'leadpipe', 'knife', 'wrench', 'candlestick', 'revolver', 'dagger']
         self.rooms = ['study', 'hall', 'lounge', 'diningroom', 'kitchen', 'ballroom', 'conservatory', 'library', 'billardroom']
-        self.characters = ['missscarlet', 'colonelmustard', 'missuswhite', 'mistergreen', 'missuspeacock', 'professorplum']
+        self.characters = ['missscarlet', 'colonelmustard', 'mrswhite', 'mrgreen', 'mrspeacock', 'professorplum']
         self.playersReady = 0
         self.currentSuggestion = ["dagger", "study", "rope"]
         self.occupancyMatrix = [[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]
