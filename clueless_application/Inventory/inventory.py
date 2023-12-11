@@ -13,7 +13,7 @@ class Inventory:
         for values in self.items: 
             if values == item: 
                 print('item in inventory send message to next client')
-
+        items = self.getItems()
         if item not in items: print('you do not have this item in your inventory to share. try again')
 
     
