@@ -381,7 +381,7 @@ if __name__ == "__main__":
     characterdisplay.grid(row = 1, column=0, sticky='', columnspan = 5)
     characterdisplay.config(font=("Courier", 25))
 
-    readyButton = Button(root, text="Ready To Play", command=sendReady).grid(row=1, column=5, columnspan=1)
+    readyButton = Button(root, text="Ready To Play", bg="green4", fg="white", command=sendReady).grid(row=1, column=5, columnspan=1)
 
     #Display Characters inventory
     inventoryList = client.characterInventory + client.weaponInventory + client.roomInventory
@@ -417,7 +417,7 @@ if __name__ == "__main__":
     # Display Broadcast of messagess
     gameOutputTitle = Label(root, text="\nOutput From Game")
     gameOutputTitle.config(font=("Courier", 15))
-    gameOutputTitle.grid(row = 11, column=1, sticky='', columnspan = 3, pady=2)
+    gameOutputTitle.grid(row = 12, column=1, sticky='', columnspan = 3, pady=2)
 
     # sets up the frame for the text entry
     mainframe = Frame(root)
